@@ -74,3 +74,7 @@ npm run lint         # prettier + eslint
 ```
 
 Set `BASE_PATH` to build for a subpath. The live copy at [andrewrkane.com/tools/genai-calculator](https://andrewrkane.com/tools/genai-calculator/) is built with `BASE_PATH=/tools/genai-calculator` as part of the website's build.
+
+## License
+
+[MIT](LICENSE) © 2026 Andrew R. Kane
