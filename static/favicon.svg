@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="GenAI Calculator">
+  <rect width="64" height="64" rx="12" fill="#0f172a"/>
+  <!-- axes -->
+  <path d="M14 50 H52 M14 50 V14" stroke="#334155" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- roofline: memory-bound ramp then a compute-bound ceiling -->
+  <path d="M14 50 L34 22 H52" fill="none" stroke="#2dd4bf" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- knee (the bottleneck crossover) -->
+  <circle cx="34" cy="22" r="3.6" fill="#34d399"/>
+</svg>

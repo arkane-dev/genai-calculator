@@ -1,0 +1,27 @@
+# Dependencies
+node_modules
+
+# SvelteKit / build output
+/.svelte-kit
+/build
+/public
+.output
+.wrangler
+
+# uv + nodeenv environment
+.venv/
+__pycache__/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+
+# Env
+.env
+.env.*
+!.env.example
+!.env.test
+
+# Vite
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
