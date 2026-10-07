@@ -3,7 +3,7 @@
 	// Self-host vs API, built on the SAME Modelling setup: you configure the exact cluster
 	// with the full Modelling control panel, the forward model (computeProfile) gives its
 	// throughput, we cost that cluster and compare to a per-token API. Because it uses the
-	// Modelling `Config`, it syncs cleanly with Modelling/Workload via the handoff.
+	// Modelling `Config`, it shares every field with Modelling/Workload through the shared scenario.
 	import BreakevenChart from '$lib/components/BreakevenChart.svelte';
 	import Controls from '$lib/components/Controls.svelte';
 	import HowTo from '$lib/components/HowTo.svelte';
@@ -12,7 +12,6 @@
 	import Slider from '$lib/components/Slider.svelte';
 	import StatCard from '$lib/components/StatCard.svelte';
 	import ShareButton from '$lib/components/ShareButton.svelte';
-	import HandoffMenu from '$lib/components/HandoffMenu.svelte';
 	import SanityNotes from '$lib/components/SanityNotes.svelte';
 	import { computeProfile } from '$lib/profiler/calc';
 	import {
@@ -36,7 +35,13 @@
 		type ApiTier
 	} from '$lib/economics/apiPricing';
 	import { applyShared, readSharedState } from '$lib/share/url';
-	import { loadShared, saveShared, readPricing, type PricingState } from '$lib/state/shared';
+	import {
+		loadShared,
+		saveShared,
+		readPricing,
+		LocalModelFallback,
+		type PricingState
+	} from '$lib/state/shared.svelte';
 	import Toggle from '$lib/components/Toggle.svelte';
 	import { onMount, untrack } from 'svelte';
 
@@ -45,7 +50,7 @@
 		(m) => (m.kind ?? 'transformer') === 'transformer' && !m.visualAR
 	);
 
-	// Full Modelling config (same shape → syncs via the handoff). Realistic mid-size default.
+	// Full Modelling config (same shape → shares every field). Realistic mid-size default.
 	let config = $state<Config>({
 		modelId: 'llama31-70b',
 		gpuId: 'h100-sxm',
@@ -75,7 +80,7 @@
 		frames: 1
 	});
 
-	// Break-even knobs (kept out of Config so the shared link / handoff stays clean).
+	// Break-even knobs (kept out of Config so the share link stays clean).
 	// Pricing (purchasing model + a custom $/GPU-hour) is shared with Modelling/Workload's
 	// cost panel, so a manual rate set there flows here and vice-versa.
 	let pricing = $state<PricingState>({
@@ -100,12 +105,18 @@
 		applyShared(config, readSharedState(location.search));
 		readPricing(loadShared(), pricing);
 		readPricing(readSharedState(location.search), pricing);
-		// This tab is token-priced only; if a non-text model synced in, fall back.
-		if (!textModels.some((m) => m.id === config.modelId)) config.modelId = 'llama31-70b';
+		// This tab is token-priced only; a non-text model falls back to Llama, locally.
+		modelFallback.apply(config, (id) => textModels.some((m) => m.id === id));
 		syncLoaded = true;
 	});
+	const modelFallback = new LocalModelFallback('llama31-70b');
+	$effect(() => modelFallback.track(config.modelId));
 	$effect(() => {
-		if (syncLoaded) saveShared({ ...(config as unknown as Record<string, unknown>), ...pricing });
+		if (syncLoaded)
+			saveShared(
+				{ ...(config as unknown as Record<string, unknown>), ...pricing },
+				{ except: modelFallback.except }
+			);
 	});
 
 	const model = $derived(MODELS_BY_ID.get(config.modelId));
@@ -259,14 +270,6 @@
 			</div>
 			<div class="row">
 				<ShareButton payload={config} />
-				<HandoffMenu
-					payload={config}
-					targets={[
-						{ path: 'modelling', label: 'Modelling' },
-						{ path: '', label: 'Workload' },
-						{ path: 'training', label: 'Training' }
-					]}
-				/>
 			</div>
 		</header>
 

@@ -27,13 +27,12 @@
 	import SanityNotes from '$lib/components/SanityNotes.svelte';
 	import type { TrainConfig } from '$lib/training/types';
 	import ShareButton from '$lib/components/ShareButton.svelte';
-	import HandoffMenu from '$lib/components/HandoffMenu.svelte';
 	import ExportButton from '$lib/components/ExportButton.svelte';
 	import type { SizingReport } from '$lib/report/markdown';
 	import { defaultPurchasing, estimateCost, PRICE_AS_OF } from '$lib/cost/pricing';
 	import { DEFAULT_GRID, type EmissionsMethod } from '$lib/energy/estimate';
 	import { applyShared, readSharedState } from '$lib/share/url';
-	import { loadShared, saveShared } from '$lib/state/shared';
+	import { loadShared, saveShared, LocalModelFallback } from '$lib/state/shared.svelte';
 	import { base } from '$app/paths';
 	import { onMount } from 'svelte';
 
@@ -102,10 +101,14 @@
 	onMount(() => {
 		applyShared(cfg, loadShared());
 		applyShared(cfg, readSharedState(location.search));
+		// Training covers transformer models only; anything else falls back, locally.
+		modelFallback.apply(cfg, (id) => trainable.some((m) => m.id === id));
 		syncLoaded = true;
 	});
+	const modelFallback = new LocalModelFallback('llama31-70b');
+	$effect(() => modelFallback.track(cfg.modelId));
 	$effect(() => {
-		if (syncLoaded) saveShared(cfg as unknown as Record<string, unknown>);
+		if (syncLoaded) saveShared(cfg as unknown as Record<string, unknown>, { except: modelFallback.except });
 	});
 
 	// Cluster described as instances (nodes) × GPUs-per-node; total = product. Two-way
@@ -241,14 +244,6 @@
 			<div class="row">
 				<ExportButton report={buildReport} filename="gpu-sizing-training" />
 				<ShareButton payload={cfg} />
-				<HandoffMenu
-					payload={cfg}
-					targets={[
-						{ path: 'modelling', label: 'Modelling' },
-						{ path: '', label: 'Workload' },
-						{ path: 'economics', label: 'Self-host vs API' }
-					]}
-				/>
 			</div>
 		</header>
 

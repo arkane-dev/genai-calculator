@@ -13,7 +13,7 @@
 	import type { Config } from '$lib/profiler/types';
 	import type { TrainConfig, TrainMethod, Optimizer } from '$lib/training/types';
 	import { applyShared, readSharedState } from '$lib/share/url';
-	import { loadShared, saveShared } from '$lib/state/shared';
+	import { loadShared, saveShared } from '$lib/state/shared.svelte';
 	import { inferenceChain, trainingChain } from '$lib/math/chains';
 
 	let config = $state<Config>({

@@ -25,12 +25,11 @@
 	import { parseModelUpload } from '$lib/profiler/upload';
 	import type { Config, ModelSpec } from '$lib/profiler/types';
 	import ShareButton from '$lib/components/ShareButton.svelte';
-	import HandoffMenu from '$lib/components/HandoffMenu.svelte';
 	import ExportButton from '$lib/components/ExportButton.svelte';
 	import CompareTable, { type CompareRow } from '$lib/components/CompareTable.svelte';
 	import type { SizingReport } from '$lib/report/markdown';
 	import { applyShared, readSharedState } from '$lib/share/url';
-	import { loadShared, saveShared, readPricing, type PricingState } from '$lib/state/shared';
+	import { loadShared, saveShared, readPricing, type PricingState } from '$lib/state/shared.svelte';
 	import { defaultPurchasing, estimateCost, PRICE_AS_OF } from '$lib/cost/pricing';
 	import { DEFAULT_GRID, type EmissionsMethod } from '$lib/energy/estimate';
 	import { base } from '$app/paths';
@@ -408,14 +407,6 @@
 				</button>
 				<ExportButton report={buildReport} filename="gpu-sizing-modelling" />
 				<ShareButton payload={config} />
-				<HandoffMenu
-					payload={config}
-					targets={[
-						{ path: '', label: 'Workload' },
-						{ path: 'economics', label: 'Self-host vs API' },
-						{ path: 'training', label: 'Training' }
-					]}
-				/>
 			</div>
 		</header>
 

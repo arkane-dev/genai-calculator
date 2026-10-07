@@ -30,11 +30,10 @@
 	import type { WorkloadSpec } from '$lib/sizing/types';
 	import InfoTip from '$lib/components/InfoTip.svelte';
 	import ShareButton from '$lib/components/ShareButton.svelte';
-	import HandoffMenu from '$lib/components/HandoffMenu.svelte';
 	import ExportButton from '$lib/components/ExportButton.svelte';
 	import type { SizingReport } from '$lib/report/markdown';
 	import { applyShared, readSharedState } from '$lib/share/url';
-	import { loadShared, saveShared, readPricing, type PricingState } from '$lib/state/shared';
+	import { loadShared, saveShared, readPricing, type PricingState } from '$lib/state/shared.svelte';
 	import { defaultPurchasing, estimateCost, PRICE_AS_OF } from '$lib/cost/pricing';
 	import { DEFAULT_GRID, type EmissionsMethod } from '$lib/energy/estimate';
 	import { onMount } from 'svelte';
@@ -96,11 +95,16 @@
 		readPricing(readSharedState(location.search), pricing);
 		syncLoaded = true;
 	});
-	// Sync the SOLVER-CHOSEN cluster (tp/pp/ep/numGpus/batch), not the bare spec, so
-	// Modelling / Economics inherit the exact fitting layout and agree on "fits".
+	// Share the SOLVER-CHOSEN cluster (tp/pp/ep/numGpus/batch) so Modelling / Economics
+	// inherit the exact fitting layout and agree on "fits", plus this tab's own inputs
+	// (concurrency, latency targets) so they survive a trip to another tab.
 	$effect(() => {
 		if (syncLoaded)
-			saveShared({ ...(chosen.config as unknown as Record<string, unknown>), ...pricing });
+			saveShared({
+				...(chosen.config as unknown as Record<string, unknown>),
+				...(spec as unknown as Record<string, unknown>),
+				...pricing
+			});
 	});
 	async function onModelFile(e: Event) {
 		const file = (e.target as HTMLInputElement).files?.[0];
@@ -446,14 +450,6 @@
 			<div class="row">
 				<ExportButton report={buildReport} filename="gpu-sizing-workload" />
 				<ShareButton payload={spec} />
-				<HandoffMenu
-					payload={spec}
-					targets={[
-						{ path: 'modelling', label: 'Modelling' },
-						{ path: 'economics', label: 'Self-host vs API' },
-						{ path: 'training', label: 'Training' }
-					]}
-				/>
 			</div>
 		</header>
 
