@@ -228,17 +228,17 @@
 
 <svelte:head><title>GenAI Calculator — Training</title></svelte:head>
 
-<div class="min-h-screen bg-slate-950 text-slate-100">
-	<div class="mx-auto max-w-7xl px-6 py-8">
-		<header class="mb-6 flex items-start justify-between gap-4">
+<div>
+	<div class="page">
+		<header class="page-head">
 			<div>
-				<h1 class="text-2xl font-semibold">Training / Fine-tuning Calculator</h1>
-				<p class="mt-1 text-sm text-slate-400">
+				<h1 class="page-title">Training / Fine-tuning Calculator</h1>
+				<p class="lede">
 					Will it fit to train, and how long will it take? First-order estimates for full
 					fine-tuning, LoRA and QLoRA.
 				</p>
 			</div>
-			<div class="flex items-center gap-2">
+			<div class="row">
 				<ExportButton report={buildReport} filename="gpu-sizing-training" />
 				<ShareButton payload={cfg} />
 				<HandoffMenu
@@ -263,8 +263,8 @@
 				<em>train</em>.
 			</p>
 
-			<p class="mt-3 font-medium text-slate-300">Full vs LoRA vs QLoRA</p>
-			<ul class="mt-1 ml-4 list-disc space-y-1">
+			<p class="sub-title">Full vs LoRA vs QLoRA</p>
+			<ul class="bullets">
 				<li>
 					<strong>Full fine-tune</strong> — trains every weight. Most accurate, most memory: gradients
 					and optimizer state for the whole model.
@@ -279,8 +279,8 @@
 				</li>
 			</ul>
 
-			<p class="mt-3 font-medium text-slate-300">The controls</p>
-			<ul class="mt-1 ml-4 list-disc space-y-1">
+			<p class="sub-title">The controls</p>
+			<ul class="bullets">
 				<li>
 					<strong>ZeRO / sharding</strong> — split the model states across your data-parallel GPUs so
 					each holds a slice. Higher stages shard more (optimizer → +gradients → +weights).
@@ -295,21 +295,21 @@
 				</li>
 			</ul>
 
-			<p class="mt-3">
+			<p class="space-top">
 				Numbers are first-order estimates, not a benchmark. v1 covers transformer language and
 				visual-AR models; diffusion and JEPA training will follow. To size <em>serving</em> instead,
 				use the <a href="{base}/modelling">Modelling</a> or <a href="{base}/">Workload</a> tabs.
 			</p>
 		</HowTo>
 
-		<div class="grid grid-cols-1 gap-6 lg:grid-cols-[340px_1fr]">
+		<div class="layout wide-controls">
 			<!-- controls -->
 			<aside
-				class="lg:sticky lg:top-6 lg:max-h-[calc(100vh-3rem)] lg:self-start lg:overflow-y-auto lg:pr-1"
+				class="sidebar"
 			>
-				<div class="flex flex-col gap-5 rounded-xl border border-slate-700 bg-slate-900/60 p-5">
+				<div class="panel controls">
 					<div>
-						<div class="mb-1 flex items-center gap-1.5 text-sm text-slate-300">
+						<div class="field-label">
 							Model
 							<InfoTip
 								text="The model you want to train or fine-tune. Bigger models need far more memory to train than to run."
@@ -318,7 +318,7 @@
 						<select
 			aria-label="Model"
 							bind:value={cfg.modelId}
-							class="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-100"
+							class="input"
 						>
 							{#each groups as grp (grp.label)}
 								<optgroup label={grp.label}>
@@ -353,7 +353,7 @@
 					{/if}
 
 					<div>
-						<div class="mb-1 flex items-center gap-1.5 text-sm text-slate-300">
+						<div class="field-label">
 							GPU
 							<InfoTip
 								text="The chip you'd train on. Its memory decides whether the model fits; its math speed decides how fast each step runs."
@@ -363,7 +363,7 @@
 			aria-label="GPU"
 							bind:value={cfg.gpuId}
 							onchange={() => (cfg.fabricId = defaultFabricFor(cfg.gpuId))}
-							class="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-100"
+							class="input"
 						>
 							{#each GPUS as g (g.id)}<option value={g.id}>{g.name}</option>{/each}
 						</select>
@@ -381,14 +381,14 @@
 						options={instanceOpts}
 						info="How many servers (instances). Total GPUs = instances × GPUs-per-node. More GPUs train faster (data-parallel) and, with sharding, let bigger models fit."
 					/>
-					<p class="-mt-2 text-[10px] text-slate-500">
-						= <span class="font-mono text-slate-400"
+					<p class="hint tight">
+						= <span class="num dim"
 							>{cfg.numGpus} GPU{cfg.numGpus === 1 ? '' : 's'}</span
 						>
 						total ({nodes} × {cfg.gpusPerNode})
 					</p>
 					<div>
-						<div class="mb-1 flex items-center gap-1.5 text-sm text-slate-300">
+						<div class="field-label">
 							Network fabric
 							<InfoTip
 								text="The network between servers. Gradient sync runs over it every step when training spans more than one server, so a faster fabric means less waiting."
@@ -397,14 +397,14 @@
 						<select
 			aria-label="Network fabric"
 							bind:value={cfg.fabricId}
-							class="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-100"
+							class="input"
 						>
 							{#each FABRICS as f (f.id)}<option value={f.id}>{f.label}</option>{/each}
 						</select>
 					</div>
 
-					<div class="border-t border-slate-700 pt-4">
-						<div class="mb-2 text-xs font-medium tracking-wide text-slate-400 uppercase">
+					<div class="group">
+						<div class="group-title">
 							Memory strategy
 						</div>
 						<Segmented
@@ -418,14 +418,14 @@
 							]}
 							info="Splits the model states across your data-parallel GPUs. Stage 1 shards the optimizer, stage 2 also the gradients, stage 3 also the weights (like FSDP). Higher = less memory per GPU, a little more communication."
 						/>
-						<div class="mt-3"></div>
+						<div class="space-top"></div>
 						<Toggle
 							label="Activation checkpointing"
 							bind:checked={cfg.activationCheckpointing}
 							hint="recompute in backward"
 							info="Throw activations away after the forward pass and recompute them during backward. Saves a lot of memory for about 30% more compute. Usually worth it."
 						/>
-						<div class="mt-3"></div>
+						<div class="space-top"></div>
 						<Toggle
 							label="CPU offload (ZeRO-Offload)"
 							bind:checked={cfg.cpuOffload}
@@ -434,8 +434,8 @@
 						/>
 					</div>
 
-					<div class="border-t border-slate-700 pt-4">
-						<div class="mb-2 text-xs font-medium tracking-wide text-slate-400 uppercase">
+					<div class="group">
+						<div class="group-title">
 							Parallelism
 						</div>
 						<Segmented
@@ -444,8 +444,8 @@
 							options={parallelOpts}
 							info="Split each layer's math across GPUs inside a node. Helps a model that's too big for one GPU's memory, at the cost of constant chatter between them."
 						/>
-						<div class="mt-3"></div>
-						<div class="flex flex-col gap-2 rounded-lg border border-slate-700 bg-slate-800/40 p-3">
+						<div class="space-top"></div>
+						<div class="tile stack-s">
 							<Toggle
 								label="Pipeline parallel (PP)"
 								bind:checked={cfg.ppEnabled}
@@ -463,8 +463,8 @@
 						</div>
 					</div>
 
-					<div class="border-t border-slate-700 pt-4">
-						<div class="mb-2 text-xs font-medium tracking-wide text-slate-400 uppercase">
+					<div class="group">
+						<div class="group-title">
 							Optimizer & batch
 						</div>
 						<Segmented
@@ -478,7 +478,7 @@
 							info="AdamW keeps two running averages per weight in fp32 (12 bytes/param with the master copy). 8-bit Adam stores them in 8-bit (6 bytes). SGD with momentum is 8 bytes."
 						/>
 						{#if cfg.method !== 'qlora'}
-							<div class="mt-3"></div>
+							<div class="space-top"></div>
 							<Segmented
 								label="Base weight format"
 								bind:value={cfg.weightFormatId}
@@ -486,7 +486,7 @@
 								info="How the base weights are stored. QLoRA forces 4-bit; here BF16 is standard for training and FP8 halves the weight memory (greyed out on GPUs without native FP8)."
 							/>
 						{/if}
-						<div class="mt-3"></div>
+						<div class="space-top"></div>
 						<Slider
 							label="Micro-batch size"
 							bind:value={cfg.microBatchSize}
@@ -495,7 +495,7 @@
 							step={1}
 							info="Sequences processed together per step, per GPU replica. Bigger uses the GPU more fully but needs more activation memory."
 						/>
-						<div class="mt-3"></div>
+						<div class="space-top"></div>
 						<Slider
 							label="Grad-accum steps"
 							bind:value={cfg.gradAccum}
@@ -504,7 +504,7 @@
 							step={1}
 							info="Micro-batches summed before an optimizer step. Lets a small micro-batch reach a big effective batch without more memory."
 						/>
-						<div class="mt-3"></div>
+						<div class="space-top"></div>
 						<Slider
 							label="Sequence length"
 							bind:value={cfg.seqLen}
@@ -516,8 +516,8 @@
 						/>
 					</div>
 
-					<div class="border-t border-slate-700 pt-4">
-						<div class="mb-2 text-xs font-medium tracking-wide text-slate-400 uppercase">
+					<div class="group">
+						<div class="group-title">
 							Dataset (time-to-train)
 						</div>
 						<Slider
@@ -529,7 +529,7 @@
 							display={fmtTokens(cfg.datasetTokens)}
 							info="How many tokens you'll train over in one pass. Fine-tuning is often 10M–10B; pretraining is trillions."
 						/>
-						<div class="mt-3"></div>
+						<div class="space-top"></div>
 						<Slider
 							label="Epochs"
 							bind:value={cfg.epochs}
@@ -543,9 +543,9 @@
 			</aside>
 
 			<!-- results -->
-			<main class="flex flex-col gap-6">
+			<main class="results">
 				<SanityNotes notes={sanity} />
-				<div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+				<div class="tiles cols-6">
 					<StatCard
 						label="Fits to train"
 						value={p.perGpu.fits ? 'Yes' : 'No'}
@@ -595,15 +595,15 @@
 					/>
 				</div>
 
-				<section class="rounded-xl border border-slate-700 bg-slate-900/60 p-5">
-					<div class="mb-3 flex items-center gap-1.5 text-sm font-medium text-slate-200">
+				<section class="panel">
+					<div class="panel-title spaced">
 						Per-GPU memory to train
 						<InfoTip
 							text="Everything one GPU must hold to train: the (possibly frozen) weights, the gradients, the optimizer's running state, the activations from the forward pass, and framework overhead. Sharding (ZeRO) and checkpointing shrink these."
 						/>
 					</div>
-					<div class="grid grid-cols-1 items-stretch gap-4 md:grid-cols-[1fr_1fr]">
-						<div class="min-h-[24rem]">
+					<div class="mem-split">
+						<div class="mem-chart">
 							<MemoryStack
 								segments={p.segments}
 								capacity={p.perGpu.capacity}
@@ -611,54 +611,52 @@
 								fits={p.perGpu.fits}
 							/>
 						</div>
-						<div class="flex flex-col justify-center gap-2 text-sm">
-							<div class="flex items-center justify-between border-b border-slate-800 py-1.5">
-								<span class="flex items-center gap-1.5 text-slate-400"
-									><span class="inline-block h-3 w-3 rounded-sm" style:background={COLORS.weights}
+						<div class="breakdown">
+							<div class="kv-row">
+								<span class="row dim"
+									><span class="swatch" style:background={COLORS.weights}
 									></span>Weights{isLora ? ' (frozen)' : ''}</span
 								>
-								<span class="font-mono text-slate-200">{fmtBytes(p.perGpu.weights)}</span>
+								<span class="num bright">{fmtBytes(p.perGpu.weights)}</span>
 							</div>
-							<div class="flex items-center justify-between border-b border-slate-800 py-1.5">
-								<span class="flex items-center gap-1.5 text-slate-400"
-									><span class="inline-block h-3 w-3 rounded-sm" style:background={COLORS.gradients}
+							<div class="kv-row">
+								<span class="row dim"
+									><span class="swatch" style:background={COLORS.gradients}
 									></span>Gradients</span
 								>
-								<span class="font-mono text-slate-200">{fmtBytes(p.perGpu.gradients)}</span>
+								<span class="num bright">{fmtBytes(p.perGpu.gradients)}</span>
 							</div>
-							<div class="flex items-center justify-between border-b border-slate-800 py-1.5">
-								<span class="flex items-center gap-1.5 text-slate-400"
-									><span class="inline-block h-3 w-3 rounded-sm" style:background={COLORS.optimizer}
+							<div class="kv-row">
+								<span class="row dim"
+									><span class="swatch" style:background={COLORS.optimizer}
 									></span>Optimizer states</span
 								>
-								<span class="font-mono text-slate-200">{fmtBytes(p.perGpu.optimizer)}</span>
+								<span class="num bright">{fmtBytes(p.perGpu.optimizer)}</span>
 							</div>
-							<div class="flex items-center justify-between border-b border-slate-800 py-1.5">
-								<span class="flex items-center gap-1.5 text-slate-400"
+							<div class="kv-row">
+								<span class="row dim"
 									><span
-										class="inline-block h-3 w-3 rounded-sm"
+										class="swatch"
 										style:background={COLORS.activations}
 									></span>Activations</span
 								>
-								<span class="font-mono text-slate-200">{fmtBytes(p.perGpu.activations)}</span>
+								<span class="num bright">{fmtBytes(p.perGpu.activations)}</span>
 							</div>
-							<div class="flex items-center justify-between py-1.5">
-								<span class="flex items-center gap-1.5 text-slate-400"
-									><span class="inline-block h-3 w-3 rounded-sm" style:background={COLORS.overhead}
+							<div class="kv-row plain">
+								<span class="row dim"
+									><span class="swatch" style:background={COLORS.overhead}
 									></span>Overhead</span
 								>
-								<span class="font-mono text-slate-200">{fmtBytes(p.perGpu.overhead)}</span>
+								<span class="num bright">{fmtBytes(p.perGpu.overhead)}</span>
 							</div>
-							<div
-								class="mt-1 flex items-center justify-between border-t border-slate-700 pt-2 font-medium"
-							>
-								<span class="text-slate-300">Total / GPU</span>
-								<span class="font-mono {p.perGpu.fits ? 'text-slate-100' : 'text-red-400'}"
+							<div class="kv-row total">
+								<span class="dim">Total / GPU</span>
+								<span class="num" class:bright={p.perGpu.fits} class:bad={!p.perGpu.fits}
 									>{fmtBytes(p.perGpu.used)} / {fmtBytes(p.perGpu.capacity)}</span
 								>
 							</div>
-							<p class="mt-1 text-xs text-slate-500">
-								Global batch <span class="font-mono text-slate-400"
+							<p class="hint">
+								Global batch <span class="num dim"
 									>{fmtTokens(p.globalBatchTokens)} tok</span
 								>
 								= {cfg.microBatchSize} × {cfg.gradAccum} accum × {p.dp} replicas × {fmtSeq(
@@ -693,14 +691,14 @@
 				/>
 
 				{#if p.notes.length}
-					<ul class="rounded-xl border border-slate-800 bg-slate-900/40 p-4 text-xs text-slate-400">
-						{#each p.notes as n (n)}<li class="flex gap-2">
-								<span class="text-slate-600">•</span>{n}
+					<ul class="notes-list">
+						{#each p.notes as n (n)}<li>
+								<span class="mute">•</span>{n}
 							</li>{/each}
 					</ul>
 				{/if}
 
-				<p class="text-xs text-slate-600">
+				<p class="small mute">
 					First-order training roofline (MFU {(0.45).toFixed(2)}) with {fmtBytes(2 * 1024 ** 3)} overhead/GPU.
 					Model states use the mixed-precision AdamW convention (weight 2 + grad 2 + optimizer 12 B/param).
 					Activation memory follows the Korthikanti et al. per-layer estimate. Pipeline bubble and exact

@@ -247,17 +247,17 @@
 
 <svelte:head><title>GenAI Calculator — Self-host vs API</title></svelte:head>
 
-<div class="min-h-screen bg-slate-950 text-slate-100">
-	<div class="mx-auto max-w-7xl px-6 py-8">
-		<header class="mb-6 flex items-start justify-between gap-4">
+<div>
+	<div class="page">
+		<header class="page-head">
 			<div>
-				<h1 class="text-2xl font-semibold">Self-host vs API</h1>
-				<p class="mt-1 text-sm text-slate-400">
+				<h1 class="page-title">Self-host vs API</h1>
+				<p class="lede">
 					When does owning GPUs beat paying per token? Configure the exact cluster (same controls as
 					Modelling), set your API price, find the crossover.
 				</p>
 			</div>
-			<div class="flex items-center gap-2">
+			<div class="row">
 				<ShareButton payload={config} />
 				<HandoffMenu
 					payload={config}
@@ -277,7 +277,7 @@
 				cluster around the clock, busy or not. An API charges <strong>per token</strong> — only for what
 				you use, but each token costs a bit more.
 			</p>
-			<ol class="mt-2 ml-4 list-decimal space-y-1">
+			<ol class="bullets numbered space-top-s">
 				<li>
 					Configure the <strong>cluster</strong> with the full Modelling controls — model, GPU, GPU
 					count, parallelism, quantization, and the request shape (input/output tokens). The forward
@@ -293,15 +293,13 @@
 					the model's real market price — replace with your quote.
 				</li>
 			</ol>
-			<p class="mt-2">
+			<p class="space-top-s">
 				The app shows which is cheaper today, the <strong>break-even duty cycle</strong>, and a
 				chart of both. The API is a straight line up from zero; self-hosting is a
 				<strong>staircase</strong> — one cluster serves only so much, so cost jumps a step as you add
 				servers.
 			</p>
-			<div
-				class="mt-3 rounded-lg border border-amber-600/40 bg-amber-500/[0.06] p-3 text-xs text-amber-200"
-			>
+			<div class="notice space-top">
 				<strong>These are first-order estimates.</strong> Self-host cost here is GPU rental only. It leaves
 				out engineering/on-call, storage, data transfer, failover headroom, and cold-start. A managed
 				API bundles that in. Treat the crossover as a starting point, then check it against real quotes
@@ -309,16 +307,16 @@
 			</div>
 		</HowTo>
 
-		<div class="grid grid-cols-1 gap-6 lg:grid-cols-[320px_1fr]">
+		<div class="layout">
 			<!-- inputs: the Modelling control panel + break-even knobs -->
 			<aside
-				class="lg:sticky lg:top-6 lg:max-h-[calc(100vh-3rem)] lg:self-start lg:overflow-y-auto lg:pr-1"
+				class="sidebar"
 			>
-				<div class="flex flex-col gap-5 rounded-xl border border-slate-700 bg-slate-900/60 p-5">
+				<div class="panel controls">
 					<Controls bind:config {isMoe} models={textModels} />
 
-					<div class="border-t border-slate-700 pt-4">
-						<div class="mb-2 text-xs font-medium tracking-wide text-slate-400 uppercase">
+					<div class="group">
+						<div class="group-title">
 							Self-host cost
 						</div>
 						<Toggle
@@ -326,7 +324,7 @@
 							bind:checked={pricing.useEstimatedPricing}
 							info="On: the median on-demand market rate for this GPU, with a typical discount for committed or spot capacity. Off: enter your own $/GPU-hour, such as a quote or a negotiated rate. Shared with the Modelling and Workload cost panels, so a rate set on any tab carries here."
 						/>
-						<div class="mt-3"></div>
+						<div class="space-top"></div>
 						{#if pricing.useEstimatedPricing}
 							<Segmented
 								label="Purchasing"
@@ -339,8 +337,8 @@
 								info="How you'd buy the GPUs. On-demand is the median market rate. Committed (a 1-3 year reservation) is about 35% less. Spot (interruptible) is about 60% less, but can be taken away."
 							/>
 						{:else}
-							<label class="block">
-								<span class="flex items-center gap-1.5 text-xs text-slate-300">
+							<label class="field">
+								<span class="field-label small">
 									$ / GPU-hour
 									<InfoTip
 										text="Your own price for one GPU for one hour. Whole-cluster cost is this × the {config.numGpus} GPU(s) sized here. Shared with the Modelling/Workload cost panels."
@@ -351,17 +349,17 @@
 									bind:value={pricing.manualPerGpuHour}
 									min="0"
 									step="0.01"
-									class="mt-1 w-full max-w-[12rem] rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-100"
+									class="input narrow"
 								/>
 							</label>
-							<p class="mt-1.5 text-[11px] text-slate-500">
+							<p class="hint">
 								Cluster / hour = {fmtUsd(pricing.manualPerGpuHour || 0)} × {config.numGpus} GPU = {clusterPerHour ==
 								null
 									? '—'
 									: fmtUsd(clusterPerHour)}/hr. Your figure, not a market estimate.
 							</p>
 						{/if}
-						<div class="mt-3"></div>
+						<div class="space-top"></div>
 						<Slider
 							label="Duty cycle"
 							bind:value={dutyPct}
@@ -373,22 +371,20 @@
 						/>
 					</div>
 
-					<div class="border-t border-slate-700 pt-4">
-						<div
-							class="mb-2 flex items-center gap-1.5 text-xs font-medium tracking-wide text-slate-400 uppercase"
-						>
+					<div class="group">
+						<div class="group-title row">
 							API price <InfoTip
 								text="Per-token price for the same model through an API, in $/1M tokens. Seeded from the OpenRouter market price, else a typical market price, else the median of listed models. Editable."
 							/>
 						</div>
-						<p class="mb-2 text-[10px] text-slate-500">
+						<p class="hint space-bottom-s">
 							{priceSourceFor(config.modelId) === 'openrouter'
 								? `Default = OpenRouter market price, ${PRICE_SNAPSHOT}.`
 								: priceSourceFor(config.modelId) === 'market'
 									? 'Default = typical market price for this model.'
 									: 'Not individually listed. Default is the median of listed models. Enter a real quote.'}
 						</p>
-						<div class="mb-2">
+						<div class="space-bottom-s">
 							<Segmented
 								label="Pricing tier"
 								bind:value={apiTier}
@@ -398,7 +394,7 @@
 								}))}
 								info="Most APIs sell the same tokens at two rates. Standard is the normal synchronous rate; Batch is asynchronous bulk jobs at about half price. Picking a tier reseeds the API price below (still editable)."
 							/>
-							<div class="mt-2">
+							<div class="space-top-s">
 								<Toggle
 									label="Prompt caching"
 									bind:checked={cacheOn}
@@ -406,35 +402,35 @@
 								/>
 							</div>
 						</div>
-						<label class="mb-2 block">
-							<span class="text-xs text-slate-400">$ / 1M input tokens</span>
+						<label class="field space-bottom-s">
+							<span class="small dim">$ / 1M input tokens</span>
 							<input
 								type="number"
 								bind:value={apiInPerM}
 								min="0"
 								step="0.01"
-								class="mt-1 w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-100"
+								class="input"
 							/>
 						</label>
-						<label class="block">
-							<span class="text-xs text-slate-400">$ / 1M output tokens</span>
+						<label class="field">
+							<span class="small dim">$ / 1M output tokens</span>
 							<input
 								type="number"
 								bind:value={apiOutPerM}
 								min="0"
 								step="0.01"
-								class="mt-1 w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-100"
+								class="input"
 							/>
 						</label>
-						<div class="mt-4 mb-1 text-xs font-medium tracking-wide text-slate-400 uppercase">
+						<div class="group-title spaced-above">
 							What the API delivers
 						</div>
-						<p class="mb-2 text-[10px] text-slate-500">
+						<p class="hint space-bottom-s">
 							Typical values. Enter your provider's real numbers.
 						</p>
-						<div class="grid grid-cols-2 gap-2">
-							<label class="block">
-								<span class="flex items-center gap-1.5 text-xs text-slate-400"
+						<div class="pair">
+							<label class="field">
+								<span class="field-label small"
 									>API output (tok/s)
 									<InfoTip
 										text="How fast the API streams ONE user's answer (tok/s). Typical hosted ~30–100; fast-silicon several hundred. Checked against the min-throughput SLO below; doesn't change the cost math."
@@ -445,11 +441,11 @@
 									bind:value={apiPerUserTps}
 									min="1"
 									step="1"
-									class="mt-1 w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-100"
+									class="input"
 								/>
 							</label>
-							<label class="block">
-								<span class="flex items-center gap-1.5 text-xs text-slate-400"
+							<label class="field">
+								<span class="field-label small"
 									>API TTFT (ms)
 									<InfoTip
 										text="API time-to-first-token for one request (ms), typically ~200–600. Checked against the Max TTFT SLO below; doesn't change the cost math."
@@ -460,16 +456,16 @@
 									bind:value={apiTtftMs}
 									min="1"
 									step="10"
-									class="mt-1 w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-100"
+									class="input"
 								/>
 							</label>
 						</div>
-						<div class="mt-4 mb-2 text-xs font-medium tracking-wide text-slate-400 uppercase">
+						<div class="group-title spaced-above">
 							Your requirement (per-user SLO)
 						</div>
-						<div class="grid grid-cols-2 gap-2">
-							<label class="block">
-								<span class="flex items-center gap-1.5 text-xs text-slate-400"
+						<div class="pair">
+							<label class="field">
+								<span class="field-label small"
 									>Min throughput (tok/s)
 									<InfoTip
 										text="Per-user speed you require. The API line goes red if its output rate is below this — the price comparison is moot if it can't meet the SLO."
@@ -480,11 +476,11 @@
 									bind:value={slaTps}
 									min="1"
 									step="5"
-									class="mt-1 w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-100"
+									class="input"
 								/>
 							</label>
-							<label class="block">
-								<span class="flex items-center gap-1.5 text-xs text-slate-400"
+							<label class="field">
+								<span class="field-label small"
 									>Max TTFT (ms)
 									<InfoTip
 										text="Longest acceptable time to first token. The API line goes red if its TTFT exceeds this."
@@ -495,7 +491,7 @@
 									bind:value={slaTtftMs}
 									min="10"
 									step="10"
-									class="mt-1 w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-100"
+									class="input"
 								/>
 							</label>
 						</div>
@@ -504,20 +500,18 @@
 			</aside>
 
 			<!-- result -->
-			<main class="flex flex-col gap-6">
+			<main class="results">
 				<SanityNotes notes={sanity} />
 				{#if !p.perGpu.fits}
-					<div class="rounded-xl border border-red-500/50 bg-red-500/10 p-4 text-sm text-red-300">
-						<span class="font-medium"
+					<div class="notice danger big">
+						<span class="notice-title"
 							>{model?.name ?? config.modelId} doesn't fit on {config.numGpus}× {gpu.name}</span
 						>
 						— it overflows GPU memory at this config. Add GPUs, raise TP/PP, or use a smaller weight format
-						(see the <a href="{base}/modelling" class="underline">Modelling</a> tab), then the cost can be compared.
+						(see the <a href="{base}/modelling">Modelling</a> tab), then the cost can be compared.
 					</div>
 				{:else if clusterPerHour == null}
-					<div
-						class="rounded-xl border border-amber-500/50 bg-amber-500/10 p-4 text-sm text-amber-200"
-					>
+					<div class="notice big">
 						{#if !pricing.useEstimatedPricing}
 							Enter a $/GPU-hour above to price the self-hosted cluster.
 						{:else}
@@ -529,20 +523,18 @@
 					</div>
 				{:else if be}
 					<!-- verdict -->
-					<div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
-						<div
-							class="col-span-2 rounded-xl border border-slate-700 bg-slate-800/50 p-4 sm:col-span-2"
-						>
-							<div class="text-xs tracking-wide text-slate-400 uppercase">
+					<div class="tiles">
+						<div class="verdict">
+							<div class="verdict-label">
 								At {dutyPct}% duty cycle
 							</div>
-							<div class="mt-1 text-3xl font-semibold" style:color={verdict?.accent}>
+							<div class="verdict-title" style:color={verdict?.accent}>
 								{verdict?.title}
 							</div>
-							<div class="mt-1 text-sm text-slate-400">
+							<div class="lede">
 								{#if be.cheaper === 'equal'}Both cost about {fmtUsd(
 										be.selfHostMonthly
-									)}/mo.{:else}Saves ~<span class="text-slate-200"
+									)}/mo.{:else}Saves ~<span class="bright"
 										>{fmtUsd(verdict?.save ?? 0)}/mo</span
 									> vs the other option.{/if}
 							</div>
@@ -564,7 +556,7 @@
 					</div>
 
 					<!-- break-even -->
-					<div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
+					<div class="tiles">
 						<StatCard
 							label="Break-even"
 							value={be.regime === 'crossover' && beReqPerDay != null
@@ -608,25 +600,25 @@
 					</div>
 
 					<!-- per-user speed -->
-					<div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
-						<div class="col-span-2 rounded-xl border border-slate-700 bg-slate-800/50 p-4">
-							<div class="flex items-center gap-1.5 text-xs tracking-wide text-slate-400 uppercase">
+					<div class="tiles">
+						<div class="verdict">
+							<div class="verdict-label">
 								Per-user speed
 								<InfoTip
 									text="How fast one user's answer streams (tok/s). An API has a bounded per-request rate (your input). Self-host streams at the sized batch's decode rate. Experience axis; doesn't change the cost verdict."
 								/>
 							</div>
 							<div
-								class="mt-1 text-lg font-semibold"
+								class="verdict-title small"
 								style:color={p.perUserTps >= apiPerUserTps ? '#22f2f7' : '#3ff0b8'}
 							>
 								{p.perUserTps >= apiPerUserTps
 									? 'Self-host streams faster'
 									: 'The API streams faster'}
 							</div>
-							<div class="mt-1 text-xs text-slate-400">
+							<div class="tile-sub">
 								Your min-throughput SLO is {slaTps} tok/s/user —
-								{#if apiPerUserTps >= slaTps}both meet it.{:else}<span class="text-amber-300"
+								{#if apiPerUserTps >= slaTps}both meet it.{:else}<span class="warn"
 										>the API ({apiPerUserTps} tok/s) is below it</span
 									>; self-host ({p.perUserTps.toFixed(0)} tok/s) meets it.{/if}
 							</div>
@@ -663,47 +655,47 @@
 					/>
 
 					<!-- traffic + cluster detail -->
-					<section class="rounded-xl border border-slate-700 bg-slate-900/60 p-5">
-						<div class="mb-3 text-sm font-medium text-slate-200">
+					<section class="panel">
+						<h3 class="panel-title spaced">
 							This month, at {dutyPct}% duty cycle
-						</div>
-						<div class="grid grid-cols-2 gap-x-6 gap-y-2 text-sm sm:grid-cols-3">
-							<div class="flex justify-between">
-								<span class="text-slate-400">Requests</span><span class="font-mono text-slate-200"
+						</h3>
+						<div class="facts">
+							<div class="kv">
+								<span class="dim">Requests</span><span class="num bright"
 									>{fmtReq(be.reqPerMonth)}</span
 								>
 							</div>
-							<div class="flex justify-between">
-								<span class="text-slate-400">Input tokens</span><span
-									class="font-mono text-slate-200">{fmtTok(be.inTokensPerMonth)}</span
+							<div class="kv">
+								<span class="dim">Input tokens</span><span
+									class="num bright">{fmtTok(be.inTokensPerMonth)}</span
 								>
 							</div>
-							<div class="flex justify-between">
-								<span class="text-slate-400">Output tokens</span><span
-									class="font-mono text-slate-200">{fmtTok(be.outTokensPerMonth)}</span
+							<div class="kv">
+								<span class="dim">Output tokens</span><span
+									class="num bright">{fmtTok(be.outTokensPerMonth)}</span
 								>
 							</div>
-							<div class="flex justify-between">
-								<span class="text-slate-400">Peak rate</span><span class="font-mono text-slate-200"
+							<div class="kv">
+								<span class="dim">Peak rate</span><span class="num bright"
 									>{be.peakReqPerSec.toFixed(1)} req/s</span
 								>
 							</div>
-							<div class="flex justify-between">
-								<span class="text-slate-400">Cluster throughput</span><span
-									class="font-mono text-slate-200"
+							<div class="kv">
+								<span class="dim">Cluster throughput</span><span
+									class="num bright"
 									>{(p.throughputTps / 1000).toFixed(1)}k tok/s</span
 								>
 							</div>
-							<div class="flex justify-between">
-								<span class="text-slate-400">Cluster</span><span class="font-mono text-slate-200"
+							<div class="kv">
+								<span class="dim">Cluster</span><span class="num bright"
 									>{config.numGpus}× {gpu.name} · TP{config.tp}·PP{config.pp}{config.ep > 1
 										? `·EP${config.ep}`
 										: ''}</span
 								>
 							</div>
 						</div>
-						{#if cost.warning}<p class="mt-3 text-[11px] text-amber-300">{cost.warning}</p>{/if}
-						<p class="mt-3 text-[10px] text-slate-500">
+						{#if cost.warning}<p class="hint warn space-top">{cost.warning}</p>{/if}
+						<p class="note space-top">
 							Self-host is billed 24/7 for the cluster you configured. API volume is derived from
 							the cluster's peak throughput scaled by the duty cycle, so both sides serve the same
 							traffic.

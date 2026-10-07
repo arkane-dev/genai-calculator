@@ -434,16 +434,16 @@
 
 <svelte:head><title>GenAI Calculator — Workload sizing</title></svelte:head>
 
-<div class="min-h-screen bg-slate-950 text-slate-100">
-	<div class="mx-auto max-w-7xl px-6 py-8">
-		<header class="mb-6 flex items-start justify-between gap-4">
+<div>
+	<div class="page">
+		<header class="page-head">
 			<div>
-				<h1 class="text-2xl font-semibold">Workload Sizing</h1>
-				<p class="mt-1 text-sm text-slate-400">
+				<h1 class="page-title">Workload Sizing</h1>
+				<p class="lede">
 					Describe the demand and per-user SLOs. The smallest cluster that meets them is sized live.
 				</p>
 			</div>
-			<div class="flex items-center gap-2">
+			<div class="row">
 				<ExportButton report={buildReport} filename="gpu-sizing-workload" />
 				<ShareButton payload={spec} />
 				<HandoffMenu
@@ -463,9 +463,9 @@
 				of the <a href="{base}/">Modelling</a> tab. There you pick the hardware and see how it runs.
 				Here you say how busy your service will be and the promises you want to keep, and the app
 				finds the <strong>smallest cluster of GPUs</strong> that can do it. Every box has an
-				<span class="text-teal-400">i</span> button — tap it to learn what that box means.
+				<span class="accent">i</span> button — tap it to learn what that box means.
 			</p>
-			<ol class="mt-2 ml-4 list-decimal space-y-1">
+			<ol class="bullets numbered space-top-s">
 				<li>
 					Pick your <strong>model</strong> (the AI brain) and a <strong>GPU</strong> to try (the chip
 					that runs it). You can upload a model's config.json to add your own.
@@ -484,13 +484,13 @@
 					(TTFT), and how fast words then stream (throughput).
 				</li>
 			</ol>
-			<p class="mt-2">
+			<p class="space-top-s">
 				The app then shows the smallest cluster that both <strong>fits the model in memory</strong>
 				and <strong>keeps every promise</strong>, plus how other GPUs would compare. The numbers are
 				quick physics-based estimates, not a real benchmark.
 			</p>
-			<p class="mt-3 font-medium text-slate-300">Supported model types</p>
-			<ul class="mt-1 ml-4 list-disc space-y-1">
+			<p class="sub-title">Supported model types</p>
+			<ul class="bullets">
 				<li>
 					<strong>Language models</strong> — chatbots and text models (Llama, Qwen, DeepSeek, GLM, Nemotron).
 					Sized by concurrent users and per-user speed promises (TTFT and throughput).
@@ -526,13 +526,13 @@
 					Sized like a language model; set output tokens to the image's token count.
 				</li>
 			</ul>
-			<p class="mt-2 text-xs text-slate-500">
+			<p class="hint space-top-s">
 				Pick the type from the grouped model menu. The demand and SLO controls change to match:
 				users and tokens for language, images or clips per second for the others.
 			</p>
-			<div class="mt-3 rounded-lg border border-slate-700 bg-slate-800/40 p-3">
-				<div class="mb-1 text-xs font-medium text-slate-300">Word list</div>
-				<ul class="ml-4 list-disc space-y-1 text-xs text-slate-400">
+			<div class="tile space-top">
+				<div class="small dim strong">Word list</div>
+				<ul class="bullets small dim">
 					<li>
 						<strong>Token</strong> — a word-piece. Models read and write tokens, not whole words. Roughly
 						¾ of a word each.
@@ -561,14 +561,14 @@
 			</div>
 		</HowTo>
 
-		<div class="grid grid-cols-1 gap-6 lg:grid-cols-[320px_1fr]">
+		<div class="layout">
 			<!-- inputs -->
 			<aside
-				class="lg:sticky lg:top-6 lg:max-h-[calc(100vh-3rem)] lg:self-start lg:overflow-y-auto lg:pr-1"
+				class="sidebar"
 			>
-				<div class="flex flex-col gap-5 rounded-xl border border-slate-700 bg-slate-900/60 p-5">
+				<div class="panel controls">
 					<div>
-						<div class="mb-1 flex items-center gap-1.5 text-sm text-slate-300">
+						<div class="field-label">
 							Model
 							<InfoTip
 								text="The AI model you want to serve. Bigger models are smarter but need more memory and more GPUs. This is what you're sizing the hardware for."
@@ -577,7 +577,7 @@
 						<select
 			aria-label="Model"
 							bind:value={spec.modelId}
-							class="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-100"
+							class="input"
 						>
 							{#each modelGroups as grp (grp.label)}
 								<optgroup label={grp.label}>
@@ -589,7 +589,7 @@
 						</select>
 					</div>
 					<div>
-						<div class="mb-1 flex items-center gap-1.5 text-sm text-slate-300">
+						<div class="field-label">
 							Candidate GPU
 							<InfoTip
 								text="The chip you'd like to run on. The app figures out how many of these you'd need. Try a few — the comparison table below shows how each one stacks up."
@@ -599,7 +599,7 @@
 			aria-label="Candidate GPU"
 							bind:value={spec.gpuId}
 							onchange={() => (spec.fabricId = defaultFabricFor(spec.gpuId))}
-							class="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-100"
+							class="input"
 						>
 							{#each GPUS as g (g.id)}<option value={g.id}>{g.name}</option>{/each}
 						</select>
@@ -611,7 +611,7 @@
 						info="How many GPUs sit inside one server. GPUs in the same server talk over a super-fast link (NVLink); GPUs in different servers talk over the slower network. Usually 8."
 					/>
 					<div>
-						<div class="mb-1 flex items-center gap-1.5 text-sm text-slate-300">
+						<div class="field-label">
 							Network fabric
 							<InfoTip
 								text="The network that connects the servers to each other. It only matters when one model is split across more than one server — a faster fabric means less waiting when GPUs share data."
@@ -620,15 +620,15 @@
 						<select
 			aria-label="Network fabric"
 							bind:value={spec.fabricId}
-							class="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-100"
+							class="input"
 						>
 							{#each FABRICS as f (f.id)}<option value={f.id}>{f.label}</option>{/each}
 						</select>
 					</div>
 
 					{#if isDiffusion}
-						<div class="border-t border-slate-700 pt-4">
-							<div class="mb-2 text-xs font-medium tracking-wide text-slate-400 uppercase">
+						<div class="group">
+							<div class="group-title">
 								Demand
 							</div>
 							<Slider
@@ -642,14 +642,14 @@
 									? 'clips'
 									: 'images'} the whole service must finish per second at peak. This is the main driver of cluster size — the app adds data-parallel replicas until it's met."
 							/>
-							<div class="mt-3"></div>
+							<div class="space-top"></div>
 							<Segmented
 								label="Resolution"
 								bind:value={spec.resolution}
 								options={RES.map((v) => ({ value: v, label: `${v}²` }))}
 								info="Frame size in pixels per side. Larger frames have far more latent patches to denoise, so time and memory rise with the area — doubling the side is roughly 4× the work."
 							/>
-							<div class="mt-3"></div>
+							<div class="space-top"></div>
 							{#if isVideoDiff}
 								<Segmented
 									label="Video length (latent frames)"
@@ -657,7 +657,7 @@
 									options={VID_FRAMES.map((v) => ({ value: v, label: String(v) }))}
 									info="How long each clip is, in the model's compressed 'latent' frames. More frames means far more space-time patches, and because attention is quadratic, the compute climbs fast."
 								/>
-								<div class="mt-3"></div>
+								<div class="space-top"></div>
 							{/if}
 							<Slider
 								label="Denoising steps"
@@ -669,7 +669,7 @@
 									? 'clip'
 									: 'image'}. Total time is steps × step time. Fewer steps are faster but can look rougher."
 							/>
-							<div class="mt-3"></div>
+							<div class="space-top"></div>
 							<Toggle
 								label="Classifier-free guidance"
 								bind:checked={spec.guidance}
@@ -678,8 +678,8 @@
 							/>
 						</div>
 
-						<div class="border-t border-slate-700 pt-4">
-							<div class="mb-2 text-xs font-medium tracking-wide text-slate-400 uppercase">
+						<div class="group">
+							<div class="group-title">
 								{isVideoDiff ? 'Per-clip SLO' : 'Per-image SLO'}
 							</div>
 							<Slider
@@ -695,8 +695,8 @@
 							/>
 						</div>
 					{:else if isJepa}
-						<div class="border-t border-slate-700 pt-4">
-							<div class="mb-2 text-xs font-medium tracking-wide text-slate-400 uppercase">
+						<div class="group">
+							<div class="group-title">
 								Demand
 							</div>
 							<Slider
@@ -708,14 +708,14 @@
 								display="{spec.targetClipsPerSec} clip/s"
 								info="How many video clips the service must encode into embeddings per second at peak. The main driver of cluster size — the app adds data-parallel replicas until it's met."
 							/>
-							<div class="mt-3"></div>
+							<div class="space-top"></div>
 							<Segmented
 								label="Resolution"
 								bind:value={spec.resolution}
 								options={JEPA_RES.map((v) => ({ value: v, label: `${v}²` }))}
 								info="Frame size in pixels per side. Larger frames mean more patches to encode, so time and memory rise with the area."
 							/>
-							<div class="mt-3"></div>
+							<div class="space-top"></div>
 							<Segmented
 								label="Frames per clip"
 								bind:value={spec.frames}
@@ -724,8 +724,8 @@
 							/>
 						</div>
 
-						<div class="border-t border-slate-700 pt-4">
-							<div class="mb-2 text-xs font-medium tracking-wide text-slate-400 uppercase">
+						<div class="group">
+							<div class="group-title">
 								Per-clip SLO
 							</div>
 							<Slider
@@ -739,8 +739,8 @@
 							/>
 						</div>
 					{:else if isEncoder}
-						<div class="border-t border-slate-700 pt-4">
-							<div class="mb-2 text-xs font-medium tracking-wide text-slate-400 uppercase">
+						<div class="group">
+							<div class="group-title">
 								Demand
 							</div>
 							<Slider
@@ -754,7 +754,7 @@
 									: 'doc'}/s"
 								info="How many documents (or query-doc pairs, for a reranker) the service must encode per second at peak. The main driver of cluster size — the app adds replicas until it's met."
 							/>
-							<div class="mt-3"></div>
+							<div class="space-top"></div>
 							<Slider
 								label="Avg sequence length"
 								bind:value={spec.inputTokens}
@@ -766,8 +766,8 @@
 							/>
 						</div>
 
-						<div class="border-t border-slate-700 pt-4">
-							<div class="mb-2 text-xs font-medium tracking-wide text-slate-400 uppercase">
+						<div class="group">
+							<div class="group-title">
 								Per-doc SLO
 							</div>
 							<Slider
@@ -781,8 +781,8 @@
 							/>
 						</div>
 					{:else if isAsr}
-						<div class="border-t border-slate-700 pt-4">
-							<div class="mb-2 text-xs font-medium tracking-wide text-slate-400 uppercase">
+						<div class="group">
+							<div class="group-title">
 								Demand
 							</div>
 							<Slider
@@ -796,8 +796,8 @@
 							/>
 						</div>
 
-						<div class="border-t border-slate-700 pt-4">
-							<div class="mb-2 text-xs font-medium tracking-wide text-slate-400 uppercase">
+						<div class="group">
+							<div class="group-title">
 								Per-stream SLO
 							</div>
 							<Slider
@@ -811,8 +811,8 @@
 							/>
 						</div>
 					{:else if isVla}
-						<div class="border-t border-slate-700 pt-4">
-							<div class="mb-2 text-xs font-medium tracking-wide text-slate-400 uppercase">
+						<div class="group">
+							<div class="group-title">
 								Demand
 							</div>
 							<Slider
@@ -827,8 +827,8 @@
 							/>
 						</div>
 
-						<div class="border-t border-slate-700 pt-4">
-							<div class="mb-2 text-xs font-medium tracking-wide text-slate-400 uppercase">
+						<div class="group">
+							<div class="group-title">
 								Per-chunk SLO
 							</div>
 							<Slider
@@ -845,8 +845,8 @@
 							/>
 						</div>
 					{:else}
-						<div class="border-t border-slate-700 pt-4">
-							<div class="mb-2 text-xs font-medium tracking-wide text-slate-400 uppercase">
+						<div class="group">
+							<div class="group-title">
 								Demand
 							</div>
 							<Slider
@@ -857,7 +857,7 @@
 								step={1}
 								info="How many people are using the service at the same time. More users at once means more work, so more GPUs. This is the single biggest driver of cluster size."
 							/>
-							<div class="mt-3"></div>
+							<div class="space-top"></div>
 							<Segmented
 								label="Load basis"
 								bind:value={spec.basis}
@@ -868,10 +868,10 @@
 								]}
 								info="Is the number above a typical moment or the busiest moment? The cluster must survive the busiest moment, so the app scales your number up to it: 'Peak' is already the worst case (×1), 'P90' is close (×1.2), and 'Average' is far below the peak so it gets the biggest boost (×2). A calmer everyday number hides bigger spikes, which is why it needs the largest bump."
 							/>
-							<p class="mt-1 text-[10px] text-slate-500">
+							<p class="hint">
 								Sizing always targets the peak. Your number is treated as the {spec.basis}, so the
 								implied peak to provision for is
-								<span class="text-slate-300">{chosen.provisionedConcurrency} concurrent</span>
+								<span class="dim">{chosen.provisionedConcurrency} concurrent</span>
 								(average → ×2, p90 → ×1.2, peak → ×1: a weaker statistic implies a higher peak).
 							</p>
 						</div>
@@ -906,8 +906,8 @@
 							/>
 						{/if}
 
-						<div class="border-t border-slate-700 pt-4">
-							<div class="mb-2 text-xs font-medium tracking-wide text-slate-400 uppercase">
+						<div class="group">
+							<div class="group-title">
 								Per-user SLO
 							</div>
 							<Slider
@@ -919,7 +919,7 @@
 								display="{spec.ttftTargetMs} ms"
 								info="Your promise for the longest a user should wait before the first word appears (time to first token), in milliseconds. Lower is snappier but harder to hit. The app rejects any cluster slower than this. Long-context prompts (100k+ tokens) can push prefill into the multi-second range, so loosen this for those."
 							/>
-							<div class="mt-3"></div>
+							<div class="space-top"></div>
 							<Slider
 								label="Min throughput"
 								bind:value={spec.throughputTargetTps}
@@ -951,7 +951,7 @@
 					{/if}
 
 					{#if !isDiffusion && !isJepa}
-						<div class="rounded-lg border border-slate-700 bg-slate-800/40 p-3">
+						<div class="tile">
 							<Toggle
 								label="Disaggregated prefill / decode"
 								bind:checked={disaggEnabled}
@@ -974,7 +974,7 @@
 					{/if}
 
 					{#if !isDiffusion && !isJepa && !isEncoder && !isVla && !isAsr}
-						<div class="rounded-lg border border-slate-700 bg-slate-800/40 p-3">
+						<div class="tile">
 							<Toggle
 								label="Speculative decoding"
 								bind:checked={spec.specDecode}
@@ -982,7 +982,7 @@
 								info="A small draft model proposes several tokens each step; the target model verifies them in a single pass. Accepted tokens come almost free, so per-user decode speeds up — meaning fewer replicas meet the same throughput SLO. The gain depends on how often drafts are accepted."
 							/>
 							{#if spec.specDecode}
-								<div class="mt-3">
+								<div class="space-top">
 									<Slider
 										label="Draft accept rate"
 										bind:value={spec.draftAcceptRate}
@@ -992,7 +992,7 @@
 										display="{(spec.draftAcceptRate * 100).toFixed(0)}%"
 										info="How often a drafted token is accepted by the target model. Higher acceptance means more tokens land per verify pass, so a bigger speed-up. Typical EAGLE/Medusa-style drafts land 60–80%."
 									/>
-									<div class="mt-3"></div>
+									<div class="space-top"></div>
 									<Slider
 										label="Draft tokens (γ)"
 										bind:value={spec.specTokens}
@@ -1006,40 +1006,38 @@
 						</div>
 					{/if}
 
-					<div class="border-t border-slate-700 pt-4">
-						<div class="mb-1 flex items-center justify-center gap-1.5 text-[10px] text-slate-500">
+					<div class="group">
+						<div class="hint centered row-center">
 							<span>Not in the list?</span>
 							<InfoTip
 								text="Add your own model by uploading its HuggingFace config.json. The app reads its size and shape and adds it to the model picker so you can size hardware for it."
 							/>
 						</div>
-						<label
-							class="block cursor-pointer rounded-lg border border-dashed border-slate-600 px-3 py-2 text-center text-xs text-slate-400 hover:bg-slate-800"
-						>
+						<label class="upload-btn">
 							+ Add model from JSON
 							<input
 								type="file"
 								accept=".json,application/json,text/plain"
-								class="hidden"
+								class="visually-hidden"
 								onchange={onModelFile}
 							/>
 						</label>
-						{#if uploadError}<p class="mt-1 text-[10px] text-red-400">{uploadError}</p>{/if}
+						{#if uploadError}<p class="hint bad">{uploadError}</p>{/if}
 					</div>
 				</div>
 			</aside>
 
 			<!-- result -->
-			<main class="flex flex-col gap-6">
+			<main class="results">
 				{#if !chosen.feasible}
-					<div class="rounded-xl border border-red-500/50 bg-red-500/10 p-4 text-sm text-red-300">
-						<span class="font-medium">{gpu.name} can't meet these SLOs</span> — {chosen.reason}. See
+					<div class="notice danger big">
+						<span class="notice-title">{gpu.name} can't meet these SLOs</span> — {chosen.reason}. See
 						feasible alternatives below.
 					</div>
 				{/if}
 
 				{#if chosen.feasible && p && isDiffusion}
-					<div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+					<div class="tiles cols-3 lg-4">
 						<StatCard
 							label="Cluster"
 							value={String(chosen.numGpus)}
@@ -1091,7 +1089,7 @@
 						/>
 					</div>
 				{:else if chosen.feasible && p && isAsr}
-					<div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+					<div class="tiles cols-3 lg-4">
 						<StatCard
 							label="Cluster"
 							value={String(chosen.numGpus)}
@@ -1136,7 +1134,7 @@
 						/>
 					</div>
 				{:else if chosen.feasible && p && isVla}
-					<div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+					<div class="tiles cols-3 lg-4">
 						<StatCard
 							label="Cluster"
 							value={String(chosen.numGpus)}
@@ -1182,7 +1180,7 @@
 						/>
 					</div>
 				{:else if chosen.feasible && p && isEncoder}
-					<div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+					<div class="tiles cols-3 lg-4">
 						<StatCard
 							label="Cluster"
 							value={String(chosen.numGpus)}
@@ -1228,7 +1226,7 @@
 						/>
 					</div>
 				{:else if chosen.feasible && p && isJepa}
-					<div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+					<div class="tiles cols-3 lg-4">
 						<StatCard
 							label="Cluster"
 							value={String(chosen.numGpus)}
@@ -1274,7 +1272,7 @@
 						/>
 					</div>
 				{:else if chosen.feasible && p}
-					<div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+					<div class="tiles cols-3 lg-4">
 						<StatCard
 							label="Cluster"
 							value={String(chosen.numGpus)}
@@ -1333,82 +1331,82 @@
 					</div>
 				{/if}
 				{#if disagg}
-					<section class="rounded-xl border border-teal-700/40 bg-teal-500/[0.03] p-5">
-						<div class="mb-3 flex items-center gap-1.5 text-sm font-medium text-slate-200">
+					<section class="panel accent-panel">
+						<div class="panel-title spaced">
 							Disaggregated prefill / decode pools
 							<InfoTip
 								text="Two independent pools sized side-by-side. Prefill takes prompts and produces the first token + KV cache; decode takes over and streams the answer. TTFT = prefill time + KV transfer over the fabric."
 							/>
 						</div>
 						{#if !disagg.feasible}
-							<p class="text-sm text-red-300">
+							<p class="size-sm bad">
 								{disagg.reason}. Falls back to the aggregated sizing above.
 							</p>
 						{:else}
-							<div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-								<div class="rounded-lg border border-slate-700 bg-slate-900/60 p-4">
-									<div class="mb-2 text-xs tracking-wide text-slate-500 uppercase">
-										Prefill pool <span class="text-slate-600">— compute-bound</span>
+							<div class="pools">
+								<div class="pool">
+									<div class="tile-label space-bottom-s">
+										Prefill pool <span class="mute">— compute-bound</span>
 									</div>
-									<div class="flex items-baseline justify-between">
-										<span class="text-slate-300">GPUs</span><span
-											class="font-mono text-lg text-slate-100"
+									<div class="kv">
+										<span class="dim">GPUs</span><span
+											class="tile-value"
 											>{disagg.prefill.gpus}
-											<span class="text-xs text-slate-500">/ {disagg.prefill.nodes}n</span></span
+											<span class="small mute">/ {disagg.prefill.nodes}n</span></span
 										>
 									</div>
-									<div class="flex items-baseline justify-between text-sm">
-										<span class="text-slate-400">Parallelism</span><span
-											class="font-mono text-slate-300"
+									<div class="kv size-sm">
+										<span class="dim">Parallelism</span><span
+											class="num dim"
 											>TP{disagg.prefill.tp} · PP{disagg.prefill.pp}{disagg.prefill.ep > 1
 												? ` · EP${disagg.prefill.ep}`
 												: ''}</span
 										>
 									</div>
-									<div class="flex items-baseline justify-between text-sm">
-										<span class="text-slate-400">Replicas</span><span
-											class="font-mono text-slate-300"
+									<div class="kv size-sm">
+										<span class="dim">Replicas</span><span
+											class="num dim"
 											>{disagg.prefill.replicas} × {disagg.prefill.replicaGpus} GPU</span
 										>
 									</div>
-									<div class="flex items-baseline justify-between text-sm">
-										<span class="text-slate-400">Per prompt</span><span
-											class="font-mono text-slate-300"
+									<div class="kv size-sm">
+										<span class="dim">Per prompt</span><span
+											class="num dim"
 											>{disagg.prefill.msPerPrompt.toFixed(0)} ms · {disagg.prefill.promptsPerSecPerReplica.toFixed(
 												1
 											)} req/s/replica</span
 										>
 									</div>
 								</div>
-								<div class="rounded-lg border border-slate-700 bg-slate-900/60 p-4">
-									<div class="mb-2 text-xs tracking-wide text-slate-500 uppercase">
-										Decode pool <span class="text-slate-600">— memory-bound</span>
+								<div class="pool">
+									<div class="tile-label space-bottom-s">
+										Decode pool <span class="mute">— memory-bound</span>
 									</div>
-									<div class="flex items-baseline justify-between">
-										<span class="text-slate-300">GPUs</span><span
-											class="font-mono text-lg text-slate-100"
+									<div class="kv">
+										<span class="dim">GPUs</span><span
+											class="tile-value"
 											>{disagg.decode.gpus}
-											<span class="text-xs text-slate-500">/ {disagg.decode.nodes}n</span></span
+											<span class="small mute">/ {disagg.decode.nodes}n</span></span
 										>
 									</div>
-									<div class="flex items-baseline justify-between text-sm">
-										<span class="text-slate-400">Parallelism</span><span
-											class="font-mono text-slate-300"
+									<div class="kv size-sm">
+										<span class="dim">Parallelism</span><span
+											class="num dim"
 											>TP{disagg.decode.tp} · PP{disagg.decode.pp}{disagg.decode.ep > 1
 												? ` · EP${disagg.decode.ep}`
 												: ''}</span
 										>
 									</div>
-									<div class="flex items-baseline justify-between text-sm">
-										<span class="text-slate-400">Replicas</span><span
-											class="font-mono text-slate-300"
+									<div class="kv size-sm">
+										<span class="dim">Replicas</span><span
+											class="num dim"
 											>{disagg.decode.replicas} × {disagg.decode.replicaGpus} GPU · batch {disagg
 												.decode.batchPerReplica}</span
 										>
 									</div>
-									<div class="flex items-baseline justify-between text-sm">
-										<span class="text-slate-400">Per user</span><span
-											class="font-mono text-slate-300"
+									<div class="kv size-sm">
+										<span class="dim">Per user</span><span
+											class="num dim"
 											>{disagg.decode.perUserTps.toFixed(1)} tok/s · {(
 												disagg.decode.clusterTps / 1000
 											).toFixed(1)}k tok/s cluster</span
@@ -1416,33 +1414,33 @@
 									</div>
 								</div>
 							</div>
-							<div class="mt-3 grid grid-cols-2 gap-3 text-xs sm:grid-cols-4">
-								<div class="rounded border border-slate-800 bg-slate-900/40 p-2">
-									<div class="text-slate-500">Total GPUs</div>
-									<div class="font-mono text-slate-100">{disagg.totalGpus}</div>
+							<div class="tiles space-top small">
+								<div class="inset">
+									<div class="mute">Total GPUs</div>
+									<div class="num bright">{disagg.totalGpus}</div>
 								</div>
-								<div class="rounded border border-slate-800 bg-slate-900/40 p-2">
-									<div class="text-slate-500">TTFT (prefill + KV)</div>
+								<div class="inset">
+									<div class="mute">TTFT (prefill + KV)</div>
 									<div
-										class="font-mono {disagg.ttftMs <= spec.ttftTargetMs
-											? 'text-emerald-300'
-											: 'text-red-300'}"
+										class="num"
+										class:ok={disagg.ttftMs <= spec.ttftTargetMs}
+										class:bad={disagg.ttftMs > spec.ttftTargetMs}
 									>
 										{disagg.ttftMs.toFixed(0)} ms
 									</div>
 								</div>
-								<div class="rounded border border-slate-800 bg-slate-900/40 p-2">
-									<div class="text-slate-500">KV transfer</div>
-									<div class="font-mono text-slate-300">{disagg.kvTransferMs.toFixed(1)} ms</div>
+								<div class="inset">
+									<div class="mute">KV transfer</div>
+									<div class="num dim">{disagg.kvTransferMs.toFixed(1)} ms</div>
 								</div>
-								<div class="rounded border border-slate-800 bg-slate-900/40 p-2">
-									<div class="text-slate-500">Steady-state</div>
-									<div class="font-mono text-slate-300">
+								<div class="inset">
+									<div class="mute">Steady-state</div>
+									<div class="num dim">
 										{disagg.promptsPerSec.toFixed(1)} req/s
 									</div>
 								</div>
 							</div>
-							<p class="mt-3 text-[10px] text-slate-500">
+							<p class="note space-top">
 								First-order model: prefill and decode are sized independently for their bottlenecks.
 								Real deployments also gain from prefix caching, chunked prefill, and higher batch on
 								decode — not modelled here.
@@ -1453,9 +1451,9 @@
 				{#if chosen.feasible && p}
 					<section><Topology {p} hasNvlink={gpu.hasNvlink} /></section>
 
-					<section class="rounded-xl border border-slate-700 bg-slate-900/60 p-5">
-						<div class="grid grid-cols-1 items-stretch gap-4 md:grid-cols-[1fr_1.4fr]">
-							<div class="min-h-[22rem]">
+					<section class="panel">
+						<div class="mem-split die-wide">
+							<div class="mem-chart short">
 								<MemoryStack
 									segments={p.segments}
 									capacity={p.perGpu.capacity}
@@ -1494,22 +1492,20 @@
 					/>
 				{:else}
 					<!-- infeasible: show the best-attempt layout, memory pressure + the binding bottleneck flagged -->
-					<section class="rounded-xl border border-slate-700 bg-slate-900/60 p-5">
-						<div class="mb-3 flex flex-wrap items-center gap-2 text-sm font-medium text-slate-200">
-							<span class="flex items-center gap-1.5">
+					<section class="panel">
+						<div class="panel-title spaced row wrap">
+							<span class="row">
 								Best-attempt layout on one {gpu.name}
 								<InfoTip
 									text="The workload can't be met on this GPU, but here's what a single GPU looks like running this model as hard as it can — the largest batch that fits at the best parallel layout the solver found. The solver shards the model to make it fit, so the memory box usually stays under the line (it overflows only when the model can't fit at any layout). The red-flagged die block is the resource that's maxed out — the reason the SLO can't be met. It isn't a hidden cluster cap."
 								/>
 							</span>
-							<span
-								class="rounded-md border border-red-500/50 bg-red-500/10 px-2 py-0.5 text-xs text-red-300"
-							>
+							<span class="pill bad bordered">
 								Bottleneck: {bottleneckLabel}
 							</span>
 						</div>
-						<div class="grid grid-cols-1 items-stretch gap-4 md:grid-cols-[1fr_1.4fr]">
-							<div class="min-h-[22rem]">
+						<div class="mem-split die-wide">
+							<div class="mem-chart short">
 								<MemoryStack
 									segments={viz.segments}
 									capacity={viz.perGpu.capacity}
@@ -1520,7 +1516,7 @@
 							</div>
 							<div><ComputeDie units={dieUnits} /></div>
 						</div>
-						<p class="mt-3 text-[10px] text-slate-500">
+						<p class="note space-top">
 							Per-GPU view at TP{chosen.config.tp} · PP{chosen.config.pp}{chosen.config.ep > 1
 								? ` · EP${chosen.config.ep}`
 								: ''}, batch {chosen.config.batchSize} (largest that fits, to load the die).
@@ -1532,18 +1528,18 @@
 				{/if}
 
 				<!-- GPU comparison -->
-				<section class="rounded-xl border border-slate-700 bg-slate-900/60 p-5">
-					<div class="mb-3 flex flex-wrap items-center justify-between gap-3">
-						<div class="flex items-center gap-1.5 text-sm font-medium text-slate-200">
+				<section class="panel">
+					<div class="panel-head">
+						<div class="panel-title">
 							GPU comparison — cluster to meet this workload
 							<InfoTip
 								text="The same workload sized on every GPU. Each row is the smallest cluster of that chip that keeps your promises, or the reason it can't. Click a row to load that GPU into the tool (it carries across tabs). Cost uses the on-demand market median for each GPU. Pick what to optimise for and the top feasible row is recommended (★)."
 							/>
-							<span class="text-[10px] font-normal text-slate-500"
+							<span class="hint inline"
 								>· click a row to use that GPU</span
 							>
 						</div>
-						<div class="w-full sm:w-72">
+						<div class="objective">
 							<Segmented
 								label="Optimise for"
 								bind:value={objective}
@@ -1556,15 +1552,13 @@
 							/>
 						</div>
 					</div>
-					<div class="overflow-x-auto">
-						<table class="w-full text-sm">
-							<thead class="text-left text-xs text-slate-500">
+					<div class="scroll-x">
+						<table class="data-table compare">
+							<thead>
 								<tr
-									><th class="py-1 pr-4">GPU</th><th class="py-1 pr-4">GPUs</th><th
-										class="py-1 pr-4">Nodes</th
-									><th class="py-1 pr-4">TP·PP·DP</th><th class="py-1 pr-4">$/hour</th><th
-										class="py-1 pr-4">{unitCostLabel}</th
-									><th class="py-1">Result</th></tr
+									><th>GPU</th><th>GPUs</th><th>Nodes</th
+									><th>TP·PP·DP</th><th>$/hour</th><th>{unitCostLabel}</th
+									><th>Result</th></tr
 								>
 							</thead>
 							<tbody>
@@ -1584,37 +1578,31 @@
 												spec.fabricId = defaultFabricFor(r.gpuId);
 											}
 										}}
-										class="cursor-pointer border-t border-slate-800 hover:bg-slate-800/60 {r.gpuId ===
-										spec.gpuId
-											? 'bg-slate-800/40'
-											: ''}"
+										class="pick"
+										class:current={r.gpuId === spec.gpuId}
 									>
-										<td
-											class="py-1.5 pr-4 {r.gpuId === spec.gpuId
-												? 'font-medium text-teal-300'
-												: 'text-slate-200'}"
-										>
+										<td class="gpu-name">
 											{#if r.gpuId === ranked.bestGpuId}<span
-													class="mr-1 text-amber-400"
+													class="star"
 													title="Recommended for the chosen objective">★</span
 												>{/if}{r.gpuName}
 										</td>
 										{#if r.feasible}
-											<td class="py-1.5 pr-4 font-mono text-slate-100">{r.numGpus}</td>
-											<td class="py-1.5 pr-4 font-mono text-slate-400">{r.numNodes}</td>
-											<td class="py-1.5 pr-4 font-mono text-slate-400"
+											<td class="num bright">{r.numGpus}</td>
+											<td class="num dim">{r.numNodes}</td>
+											<td class="num dim"
 												>{r.tp}·{r.pp}{r.ep > 1 ? `·E${r.ep}` : ''}·{r.dp}</td
 											>
-											<td class="py-1.5 pr-4 font-mono text-slate-300"
+											<td class="num dim"
 												>{hr == null ? '—' : fmtUsd(hr)}</td
 											>
-											<td class="py-1.5 pr-4 font-mono text-slate-300"
+											<td class="num dim"
 												>{unit == null ? '—' : fmtUsdSmall(unit)}</td
 											>
-											<td class="py-1.5 text-emerald-400">meets SLOs</td>
+											<td class="ok">meets SLOs</td>
 										{:else}
-											<td class="py-1.5 pr-4 text-slate-600" colspan="5">—</td>
-											<td class="py-1.5 text-red-400">{r.reason}</td>
+											<td class="mute" colspan="5">—</td>
+											<td class="bad">{r.reason}</td>
 										{/if}
 									</tr>
 								{/each}
@@ -1623,7 +1611,7 @@
 					</div>
 				</section>
 
-				<p class="text-xs text-slate-600">
+				<p class="small mute">
 					First-order sizing: TTFT is a single request's prefill; per-user throughput is the decode
 					rate at the sized batch. Cluster = TP·PP model-parallel groups replicated (DP) until the
 					provisioned concurrency is served. Estimates, not a benchmark.
@@ -1632,3 +1620,29 @@
 		</div>
 	</div>
 </div>
+
+<style>
+	.row-center { display: flex; align-items: center; justify-content: center; gap: 0.375rem; margin: 0 0 var(--nd-space-1); }
+	.accent-panel {
+		border-color: color-mix(in srgb, var(--nd-accent) 40%, transparent);
+		background: color-mix(in srgb, var(--nd-accent) 3%, transparent);
+	}
+	.pools { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--nd-space-4); }
+	@media (min-width: 768px) { .pools { grid-template-columns: 1fr 1fr; } }
+	.pool { padding: var(--nd-space-4); border: 1px solid var(--nd-line-strong); background: color-mix(in srgb, var(--nd-surface-1) 60%, transparent); }
+	.bordered { border: 1px solid color-mix(in srgb, var(--nd-red) 50%, transparent); font-weight: 400; }
+	.hint.inline { margin: 0; font-weight: 400; }
+	.objective { width: 100%; }
+	@media (min-width: 640px) { .objective { width: 18rem; } }
+	.scroll-x { overflow-x: auto; }
+	.compare { font-size: var(--nd-text-sm); }
+	.compare th { font-size: var(--nd-text-xs); }
+	.pick { cursor: pointer; }
+	.pick:hover { background: color-mix(in srgb, var(--nd-surface-2) 60%, transparent); }
+	.pick:focus-visible { outline: 2px solid var(--nd-focus); outline-offset: -2px; }
+	.pick.current { background: color-mix(in srgb, var(--nd-surface-2) 40%, transparent); }
+	.gpu-name { color: var(--nd-text); }
+	.pick.current .gpu-name { color: var(--nd-accent); font-weight: 500; }
+	.star { margin-right: var(--nd-space-1); color: var(--nd-yellow); }
+	.strong { font-weight: 500; margin-bottom: var(--nd-space-1); }
+</style>

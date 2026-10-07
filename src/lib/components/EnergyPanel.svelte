@@ -104,19 +104,19 @@
 	});
 </script>
 
-<section class="rounded-xl border border-slate-700 bg-slate-900/60 p-5">
-	<div class="mb-3 flex flex-wrap items-center justify-between gap-3">
-		<div class="flex items-center gap-1.5 text-sm font-medium text-slate-200">
+<section class="panel">
+	<div class="panel-head">
+		<div class="panel-title">
 			Power &amp; energy
 			<InfoTip
 				text="Estimated power at the wall (GPU draw + host overhead × datacenter PUE). GPU draw scales with utilization: idle sits near 30% of TDP, sustained work near TDP. Emissions use the grid's carbon intensity: a hydro grid like Sweden's is more than 10× cleaner than India's coal-heavy grid. First-order estimate."
 			/>
 		</div>
-		<label class="flex items-center gap-2 text-xs text-slate-400">
+		<label class="inline-field">
 			Grid
 			<select
 				bind:value={region}
-				class="rounded-md border border-slate-600 bg-slate-800 px-2 py-1 text-xs text-slate-100"
+				class="input compact"
 			>
 				{#each GRIDS as g (g.id)}<option value={g.id}>{g.label}</option>{/each}
 				<option value="custom">Custom…</option>
@@ -124,31 +124,31 @@
 		</label>
 	</div>
 
-	<div class="mb-3 rounded-lg border border-amber-600/40 bg-amber-500/5 p-3 text-xs text-amber-200">
-		<span class="font-semibold text-amber-300">Estimates only.</span>
+	<div class="notice spaced">
+		<span class="notice-title">Estimates only.</span>
 		First-order approximations, not audited figures. Grid intensities are directional, and TDP-based
 		power under-counts real host draw. For anything you report externally, use measured figures from
 		your provider or your own meters.
 	</div>
 
 	{#if !e || !gpu}
-		<p class="text-sm text-slate-400">No power figure for this GPU.</p>
+		<p class="size-sm dim">No power figure for this GPU.</p>
 	{:else}
-		<div class="mb-3 flex flex-wrap items-end gap-4">
+		<div class="field-row spaced">
 			{#if region === 'custom'}
-				<label class="block text-xs text-slate-400">
+				<label class="field small dim">
 					Grid intensity (gCO₂e/kWh)
 					<input
 						type="number"
 						bind:value={customGCo2}
 						min="0"
 						step="10"
-						class="mt-1 block w-28 rounded-lg border border-slate-600 bg-slate-800 px-2 py-1 text-sm text-slate-100"
+						class="input compact num-7"
 					/>
 				</label>
 			{/if}
-			<label class="block text-xs text-slate-400">
-				<span class="flex items-center gap-1.5"
+			<label class="field small dim">
+				<span class="row"
 					>PUE <InfoTip
 						text="Power Usage Effectiveness: total facility power ÷ IT power. Large cloud datacenters report about 1.1-1.2, colocation about 1.4; the industry average is about 1.56."
 					/></span
@@ -159,22 +159,22 @@
 					min="1"
 					max="3"
 					step="0.01"
-					class="mt-1 block w-24 rounded-lg border border-slate-600 bg-slate-800 px-2 py-1 text-sm text-slate-100"
+					class="input compact num-6"
 				/>
 			</label>
-			<div class="flex gap-1.5">
+			<div class="row">
 				{#each PUE_PRESETS as preset (preset.label)}
 					<button
 						type="button"
-						class="rounded-md border px-2 py-1 text-[11px] {pue === preset.pue
-							? 'border-teal-500 text-teal-300'
-							: 'border-slate-600 text-slate-400 hover:text-slate-200'}"
+						class="preset"
+						class:on={pue === preset.pue}
+						aria-pressed={pue === preset.pue}
 						onclick={() => (pue = preset.pue)}>{preset.label} {preset.pue}</button
 					>
 				{/each}
 			</div>
 		</div>
-		<div class="mb-3 flex flex-wrap items-end gap-4">
+		<div class="field-row spaced">
 			<Segmented
 				label="Emissions method"
 				bind:value={method}
@@ -185,7 +185,7 @@
 				info="Location-based counts the actual grid mix: what a physical measurement would show. Market-based subtracts the renewable energy your provider buys. Many large providers report matching most or all of their annual use. Both are legitimate; they answer different questions."
 			/>
 			{#if method === 'market'}
-				<label class="block text-xs text-slate-400">
+				<label class="field small dim">
 					Renewable match (%)
 					<input
 						type="number"
@@ -193,50 +193,50 @@
 						min="0"
 						max="100"
 						step="5"
-						class="mt-1 block w-24 rounded-lg border border-slate-600 bg-slate-800 px-2 py-1 text-sm text-slate-100"
+						class="input compact num-6"
 					/>
 				</label>
 			{/if}
 		</div>
-		<div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
-			<div class="rounded-lg border border-slate-700 bg-slate-800/40 p-3">
-				<div class="text-[11px] tracking-wide text-slate-500 uppercase">Power draw</div>
-				<div class="mt-1 font-mono text-lg text-slate-100">{fmtKw(e.facilityKw)}</div>
-				<div class="mt-0.5 text-xs text-slate-400">
+		<div class="tiles">
+			<div class="tile">
+				<div class="tile-label">Power draw</div>
+				<div class="tile-value">{fmtKw(e.facilityKw)}</div>
+				<div class="tile-sub">
 					{e.perGpuWatts.toFixed(0)} W / GPU · PUE {e.pue.toFixed(2)}
 				</div>
 			</div>
-			<div class="rounded-lg border border-slate-700 bg-slate-800/40 p-3">
-				<div class="text-[11px] tracking-wide text-slate-500 uppercase">Energy / day</div>
-				<div class="mt-1 font-mono text-lg text-slate-100">{fmtKwh(e.kwhPerDay)}</div>
-				<div class="mt-0.5 text-xs text-slate-400">{fmtKwh(e.kwhPerYear)} / year</div>
+			<div class="tile">
+				<div class="tile-label">Energy / day</div>
+				<div class="tile-value">{fmtKwh(e.kwhPerDay)}</div>
+				<div class="tile-sub">{fmtKwh(e.kwhPerYear)} / year</div>
 			</div>
-			<div class="rounded-lg border border-slate-700 bg-slate-800/40 p-3">
-				<div class="text-[11px] tracking-wide text-slate-500 uppercase">CO₂e / year</div>
-				<div class="mt-1 font-mono text-lg text-slate-100">{fmtCo2(e.gCo2PerYear / 1000)}</div>
-				<div class="mt-0.5 text-xs text-slate-400">
+			<div class="tile">
+				<div class="tile-label">CO₂e / year</div>
+				<div class="tile-value">{fmtCo2(e.gCo2PerYear / 1000)}</div>
+				<div class="tile-sub">
 					{e.gCo2PerKwh.toFixed(e.gCo2PerKwh < 10 ? 1 : 0)} g/kWh · {e.method === 'market'
 						? 'market-based'
 						: 'location-based'}
 				</div>
 			</div>
 			{#if perUnit}
-				<div class="rounded-lg border border-emerald-700/50 bg-emerald-500/5 p-3">
-					<div class="text-[11px] tracking-wide text-emerald-400 uppercase">{perUnit.label}</div>
-					<div class="mt-1 font-mono text-lg text-emerald-300">{perUnit.value}</div>
-					<div class="mt-0.5 text-xs text-slate-400">{perUnit.sub}</div>
+				<div class="tile good">
+					<div class="tile-label">{perUnit.label}</div>
+					<div class="tile-value">{perUnit.value}</div>
+					<div class="tile-sub">{perUnit.sub}</div>
 				</div>
 			{:else}
-				<div class="rounded-lg border border-slate-700 bg-slate-800/40 p-3">
-					<div class="text-[11px] tracking-wide text-slate-500 uppercase">CO₂e / hour</div>
-					<div class="mt-1 font-mono text-lg text-slate-100">{fmtCo2(e.gCo2PerHour / 1000)}</div>
-					<div class="mt-0.5 text-xs text-slate-400">
+				<div class="tile">
+					<div class="tile-label">CO₂e / hour</div>
+					<div class="tile-value">{fmtCo2(e.gCo2PerHour / 1000)}</div>
+					<div class="tile-sub">
 						{e.method === 'market' ? 'market-based' : 'location-based'}, {e.regionLabel}
 					</div>
 				</div>
 			{/if}
 		</div>
-		<p class="mt-2 text-[10px] text-slate-500">
+		<p class="note">
 			First-order: GPU draw = idle 30% of TDP + linear to TDP with utilization. Host overhead 30% of
 			GPU. PUE {e.pue.toFixed(2)}. Grid intensities are directional estimates anchored to public 2024
 			grid-mix data.{e.method === 'market'

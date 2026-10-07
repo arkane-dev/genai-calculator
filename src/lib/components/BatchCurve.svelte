@@ -48,8 +48,8 @@
 	);
 </script>
 
-<section class="rounded-xl border border-slate-700 bg-slate-900/60 p-5">
-	<div class="mb-2 flex items-center gap-1.5 text-sm font-medium text-slate-200">
+<section class="panel">
+	<div class="panel-title spaced">
 		Batch sweep — throughput vs per-user speed
 		<InfoTip
 			text="Holds this exact config and sweeps the batch size (how many requests share the GPU at once). Bigger batches pack the GPU more fully, so aggregate throughput (teal) climbs then saturates — and cost per token falls with it. But each user's decode speed (amber) drops, because they share the same memory reads. The 'knee' is where throughput stops improving much: past it you lose per-user speed for little extra throughput. The dashed line is your current batch."
@@ -57,11 +57,11 @@
 	</div>
 
 	{#if n < 2}
-		<p class="text-sm text-slate-400">Not enough fitting batch sizes to plot a curve.</p>
+		<p class="size-sm dim">Not enough fitting batch sizes to plot a curve.</p>
 	{:else}
 		<svg
 			viewBox="0 0 {W} {H}"
-			class="w-full"
+			class="chart"
 			role="img"
 			aria-label="Throughput and per-user speed versus batch size"
 		>
@@ -93,7 +93,7 @@
 					x={xOf(kneeIdx)}
 					y={PAD.t + 10}
 					text-anchor="middle"
-					class="fill-emerald-400 text-[10px]">sweet spot</text
+					class="t-ok">sweet spot</text
 				>
 			{/if}
 
@@ -120,23 +120,23 @@
 			{/if}
 
 			<!-- axis labels -->
-			<text x={PAD.l - 8} y={PAD.t + 4} text-anchor="end" class="fill-teal-400 text-[10px]"
+			<text x={PAD.l - 8} y={PAD.t + 4} text-anchor="end" class="t-accent"
 				>{fmtTps(tpMax)}</text
 			>
-			<text x={PAD.l - 8} y={PAD.t + plotH} text-anchor="end" class="fill-teal-400 text-[10px]"
+			<text x={PAD.l - 8} y={PAD.t + plotH} text-anchor="end" class="t-accent"
 				>0</text
 			>
-			<text x={W - PAD.r + 8} y={PAD.t + 4} text-anchor="start" class="fill-amber-400 text-[10px]"
+			<text x={W - PAD.r + 8} y={PAD.t + 4} text-anchor="start" class="t-warn"
 				>{puMax.toFixed(0)}</text
 			>
 			<text
 				x={W - PAD.r + 8}
 				y={PAD.t + plotH}
 				text-anchor="start"
-				class="fill-amber-400 text-[10px]">0</text
+				class="t-warn">0</text
 			>
 			{#each tickIdxs as i (i)}
-				<text x={xOf(i)} y={H - PAD.b + 16} text-anchor="middle" class="fill-slate-500 text-[10px]"
+				<text x={xOf(i)} y={H - PAD.b + 16} text-anchor="middle" class="t-mute"
 					>{points[i].batch}</text
 				>
 			{/each}
@@ -161,44 +161,44 @@
 			/>
 		</svg>
 
-		<div class="mt-2 flex flex-wrap items-center justify-between gap-2 text-xs">
-			<div class="flex items-center gap-4">
-				<span class="flex items-center gap-1.5 text-slate-300"
-					><span class="inline-block h-2 w-4 rounded" style="background:#ff2bd6"></span>Aggregate
+		<div class="legend-bar">
+			<div class="legend">
+				<span
+					><span class="swatch line" style="background:#ff2bd6"></span>Aggregate
 					throughput</span
 				>
-				<span class="flex items-center gap-1.5 text-slate-300"
-					><span class="inline-block h-2 w-4 rounded" style="background:#f5ec58"></span>Per-user
+				<span
+					><span class="swatch line" style="background:#f5ec58"></span>Per-user
 					speed</span
 				>
 			</div>
-			<span class="text-slate-500">x: batch size (requests in flight)</span>
+			<span class="mute">x: batch size (requests in flight)</span>
 		</div>
 
 		{#if cur}
-			<div class="mt-3 grid grid-cols-2 gap-3 text-xs sm:grid-cols-4">
-				<div class="rounded border border-slate-800 bg-slate-900/40 p-2">
-					<div class="text-slate-500">At batch {cur.batch}</div>
-					<div class="font-mono text-slate-200">{fmtTps(cur.throughputTps)} tok/s</div>
+			<div class="tiles space-top small">
+				<div class="inset">
+					<div class="mute">At batch {cur.batch}</div>
+					<div class="num bright">{fmtTps(cur.throughputTps)} tok/s</div>
 				</div>
-				<div class="rounded border border-slate-800 bg-slate-900/40 p-2">
-					<div class="text-slate-500">Per user</div>
-					<div class="font-mono text-slate-200">{cur.perUserTps.toFixed(1)} tok/s</div>
+				<div class="inset">
+					<div class="mute">Per user</div>
+					<div class="num bright">{cur.perUserTps.toFixed(1)} tok/s</div>
 				</div>
-				<div class="rounded border border-slate-800 bg-slate-900/40 p-2">
-					<div class="text-slate-500">TTFT</div>
-					<div class="font-mono text-slate-200">{cur.ttftMs.toFixed(0)} ms</div>
+				<div class="inset">
+					<div class="mute">TTFT</div>
+					<div class="num bright">{cur.ttftMs.toFixed(0)} ms</div>
 				</div>
-				<div class="rounded border border-slate-800 bg-slate-900/40 p-2">
-					<div class="text-slate-500">Cost / 1M tok</div>
-					<div class="font-mono text-slate-200">
+				<div class="inset">
+					<div class="mute">Cost / 1M tok</div>
+					<div class="num bright">
 						{cur.per1M == null ? '—' : fmtUsdSmall(cur.per1M)}
 					</div>
 				</div>
 			</div>
 		{/if}
 		{#if knee}
-			<p class="mt-2 text-[10px] text-slate-500">
+			<p class="note">
 				Sweet spot ≈ batch {knee.batch}: {fmtTps(knee.throughputTps)} tok/s aggregate at
 				{knee.perUserTps.toFixed(0)} tok/s per user. Beyond it, throughput is within 10% of peak while
 				per-user speed keeps falling. Estimate, single replica of this config.

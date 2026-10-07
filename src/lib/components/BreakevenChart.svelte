@@ -74,11 +74,11 @@
 	const yTicks = $derived([0, 0.25, 0.5, 0.75, 1].map((f) => f * yMax));
 </script>
 
-<div class="rounded-xl border border-slate-700 bg-slate-900/60 p-5">
-	<div class="mb-2 flex flex-wrap items-center gap-1.5 text-sm font-medium text-slate-200">
+<div class="panel">
+	<div class="panel-title spaced row wrap">
 		Cost vs volume
 		{#if apiViolatesSlo}
-			<span class="rounded bg-red-500/15 px-1.5 py-0.5 text-xs font-semibold text-red-400"
+			<span class="pill bad"
 				>⚠ API can’t meet your SLO</span
 			>
 		{/if}
@@ -88,19 +88,19 @@
 	</div>
 	<svg
 		viewBox="0 0 {W} {H}"
-		class="w-full"
+		class="chart"
 		role="img"
 		aria-label="Monthly cost versus request volume"
 	>
 		<!-- gridlines -->
 		{#each yTicks as ty (ty)}
 			<line x1={PAD.l} y1={yOf(ty)} x2={W - PAD.r} y2={yOf(ty)} stroke="#12163a" stroke-width="1" />
-			<text x={PAD.l - 8} y={yOf(ty) + 3} text-anchor="end" class="fill-slate-500 text-[10px]"
+			<text x={PAD.l - 8} y={yOf(ty) + 3} text-anchor="end" class="t-mute"
 				>{fmtUsd(ty)}</text
 			>
 		{/each}
 		{#each xTicks as tx (tx)}
-			<text x={xOf(tx)} y={H - PAD.b + 16} text-anchor="middle" class="fill-slate-500 text-[10px]"
+			<text x={xOf(tx)} y={H - PAD.b + 16} text-anchor="middle" class="t-mute"
 				>{fmtReq(tx)}</text
 			>
 		{/each}
@@ -116,7 +116,7 @@
 				stroke-width="1.5"
 				stroke-dasharray="4 3"
 			/>
-			<text x={beX} y={PAD.t + 10} text-anchor="middle" class="fill-amber-400 text-[10px]"
+			<text x={beX} y={PAD.t + 10} text-anchor="middle" class="t-warn"
 				>break-even</text
 			>
 		{/if}
@@ -153,7 +153,7 @@
 				x={PAD.l + plotW / 2}
 				y={PAD.t + 16}
 				text-anchor="middle"
-				class="fill-red-300 text-[11px] font-semibold"
+				class="t-bad label-strong"
 			>
 				{apiSloNote || 'API can’t meet your throughput SLO — the price comparison is moot'}
 			</text>
@@ -171,20 +171,24 @@
 		/>
 	</svg>
 
-	<div class="mt-2 flex flex-wrap items-center justify-between gap-2 text-xs">
-		<div class="flex items-center gap-4">
-			<span class="flex items-center gap-1.5 text-slate-300"
-				><span class="inline-block h-2 w-4 rounded" style="background:#22f2f7"></span>Self-host
+	<div class="legend-bar">
+		<div class="legend">
+			<span
+				><span class="swatch line" style="background:#22f2f7"></span>Self-host
 				(steps = +1 cluster)</span
 			>
-			<span class="flex items-center gap-1.5 {apiViolatesSlo ? 'text-red-400' : 'text-slate-300'}"
-				><span class="inline-block h-2 w-4 rounded" style:background={apiColor}></span>API (per
+			<span class:bad={apiViolatesSlo}
+				><span class="swatch line" style:background={apiColor}></span>API (per
 				token){apiViolatesSlo ? ' — below SLO' : ''}</span
 			>
-			<span class="flex items-center gap-1.5 text-slate-400"
-				><span class="inline-block h-2.5 w-2.5 rounded-full bg-slate-200/70"></span>your demand</span
+			<span class="row dim"
+				><span class="swatch demand"></span>your demand</span
 			>
 		</div>
-		<span class="text-slate-500">x: requests / month · y: $ / month</span>
+		<span class="mute">x: requests / month · y: $ / month</span>
 	</div>
 </div>
+
+<style>
+	.demand { width: 0.625rem; height: 0.625rem; background: color-mix(in srgb, var(--nd-text) 70%, transparent); }
+</style>

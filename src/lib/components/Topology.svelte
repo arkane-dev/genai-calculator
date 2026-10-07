@@ -22,10 +22,10 @@
 
 	const badge = $derived(
 		c.scaleOut === 'single'
-			? { text: 'Single node', tone: 'text-slate-300' }
+			? { text: 'Single node', tone: 'dim' }
 			: c.scaleOut === 'data-parallel'
-				? { text: 'Data-parallel scale-out', tone: 'text-emerald-400' }
-				: { text: 'Model-parallel across nodes', tone: 'text-amber-400' }
+				? { text: 'Data-parallel scale-out', tone: 'ok' }
+				: { text: 'Model-parallel across nodes', tone: 'warn' }
 	);
 	const parallelLabel = $derived(
 		`TP ${c.tp}` +
@@ -35,10 +35,10 @@
 	);
 </script>
 
-<div class="rounded-lg border border-slate-600 bg-slate-900 p-4">
-	<div class="mb-3 flex flex-wrap items-baseline justify-between gap-2">
-		<span class="text-sm font-medium text-slate-200">Cluster topology</span>
-		<span class="font-mono text-xs text-slate-400">
+<div class="topo">
+	<div class="kv head">
+		<span class="title">Cluster topology</span>
+		<span class="num small dim">
 			{c.numNodes} node × {c.gpusPerNode} GPU · {parallelLabel}
 			<span class={badge.tone}> · {badge.text}</span>
 		</span>
@@ -46,7 +46,7 @@
 
 	{#if c.numNodes > 1}
 		<!-- shared inter-node fabric spine -->
-		<div class="mb-3" style:opacity={c.crossesFabric ? 1 : 0.4}>
+		<div class="spine" style:opacity={c.crossesFabric ? 1 : 0.4}>
 			<Pipe
 				frac={p.netFrac}
 				color={COLORS.network}
@@ -59,25 +59,23 @@
 	{/if}
 
 	<!-- nodes: 2 wide, then wrap down -->
-	<div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+	<div class="nodes">
 		{#each Array(shownNodes) as _, n (n)}
-			<div class="overflow-hidden rounded-lg border border-slate-600 bg-slate-800/40 p-2">
-				<div
-					class="mb-2 flex items-center justify-between text-[11px] tracking-wide text-slate-400 uppercase"
-				>
+			<div class="node">
+				<div class="node-head">
 					<span>Node {n}</span>
 					{#if c.numNodes > 1}
 						<span
-							class="h-1.5 w-1.5 rounded-full"
+							class="dot"
 							style:background-color={c.crossesFabric ? COLORS.network : '#5659a4'}
 						></span>
 					{/if}
 				</div>
-				<div class="flex items-center gap-0.5">
+				<div class="gpus">
 					{#each Array(Math.min(gpn, gpusInNode(n))) as _, col (col)}
 						{@const g = n * c.gpusPerNode + col}
 						<div
-							class="flex h-9 min-w-0 flex-1 items-center justify-center truncate rounded-md border px-0.5 text-[10px] font-medium"
+							class="gpu"
 							style:border-color="{COLORS.nvlink}66"
 							style:color={COLORS.nvlink}
 							style:background-color="{COLORS.nvlink}18"
@@ -86,7 +84,7 @@
 						</div>
 						{#if col < Math.min(gpn, gpusInNode(n)) - 1}
 							{@const live = c.tp > 1 && sameTpGroup(g, g + 1)}
-							<div class="w-2.5 shrink-0" style:opacity={live ? 1 : 0.2}>
+							<div class="link" style:opacity={live ? 1 : 0.2}>
 								<Pipe frac={live ? p.nvlinkFrac : 0} color={COLORS.nvlink} />
 							</div>
 						{/if}
@@ -96,48 +94,48 @@
 		{/each}
 	</div>
 	{#if c.numNodes > MAX_NODES}
-		<div class="mt-2 text-xs text-slate-500">+{c.numNodes - MAX_NODES} more nodes</div>
+		<div class="more small mute">+{c.numNodes - MAX_NODES} more nodes</div>
 	{/if}
 
 	<!-- legend -->
-	<div class="mt-3 grid gap-1 text-xs">
+	<div class="key small">
 		{#if !p.comm.tpActive && !p.comm.epActive && !p.comm.ppActive}
-			<p class="text-slate-500">No model parallelism — GPUs run independent replicas.</p>
+			<p class="mute">No model parallelism — GPUs run independent replicas.</p>
 		{/if}
 
 		{#if p.comm.tpActive}
-			<div class="flex items-start gap-2">
+			<div class="key-row">
 				<span
-					class="mt-1 inline-block h-2 w-4 shrink-0 rounded-full"
+					class="swatch line"
 					style:background-color={p.comm.tpOverFabric ? COLORS.network : COLORS.nvlink}
 				></span>
-				<span class="text-slate-400">
+				<span class="dim">
 					TP all-reduce over {p.comm.tpOverFabric
 						? p.fabric.label + ' fabric'
 						: hasNvlink
 							? 'NVLink'
 							: 'PCIe'}
-					· <span class="font-mono">{p.comm.tpGBs.toFixed(1)} GB/s</span>
-					{#if p.comm.tpOverFabric}<span class="text-amber-400"> — crosses nodes</span>{/if}
+					· <span class="num">{p.comm.tpGBs.toFixed(1)} GB/s</span>
+					{#if p.comm.tpOverFabric}<span class="warn"> — crosses nodes</span>{/if}
 				</span>
 			</div>
 		{/if}
 
 		{#if p.comm.epActive}
-			<div class="flex items-start gap-2">
+			<div class="key-row">
 				<span
-					class="mt-1 inline-block h-2 w-4 shrink-0 rounded-full"
+					class="swatch line"
 					style:background-color={p.comm.epOverFabric ? COLORS.network : COLORS.nvlink}
 				></span>
-				<span class="text-slate-400">
+				<span class="dim">
 					EP all-to-all over {p.comm.epOverFabric
 						? p.fabric.label + ' fabric'
 						: hasNvlink
 							? 'NVLink'
 							: 'PCIe'}
-					· <span class="font-mono">{p.comm.epGBs.toFixed(1)} GB/s</span>
+					· <span class="num">{p.comm.epGBs.toFixed(1)} GB/s</span>
 					{#if p.comm.epOverFabric}
-						<span class={p.fabric.kind === 'multipath' ? 'text-teal-300' : 'text-amber-400'}>
+						<span class={p.fabric.kind === 'multipath' ? 'accent' : 'warn'}>
 							— sustains {Math.round(p.fabric.a2aEff * 100)}% of peak
 							{#if p.fabric.kind === 'multipath'}(multipath RDMA sprays packets across paths){:else}(flow-routed,
 								collides on all-to-all){/if}
@@ -148,28 +146,77 @@
 		{/if}
 
 		{#if p.comm.ppActive}
-			<div class="flex items-start gap-2">
+			<div class="key-row">
 				<span
-					class="mt-1 inline-block h-2 w-4 shrink-0 rounded-full"
+					class="swatch line"
 					style:background-color={p.comm.ppOverFabric ? COLORS.network : COLORS.nvlink}
 				></span>
-				<span class="text-slate-400">
+				<span class="dim">
 					PP hand-off over {p.comm.ppOverFabric
 						? p.fabric.label + ' fabric'
 						: hasNvlink
 							? 'NVLink'
 							: 'PCIe'}
-					· <span class="font-mono">{p.comm.ppGBs.toFixed(2)} GB/s</span>
-					<span class="text-slate-500"> — point-to-point, tiny</span>
+					· <span class="num">{p.comm.ppGBs.toFixed(2)} GB/s</span>
+					<span class="mute"> — point-to-point, tiny</span>
 				</span>
 			</div>
 		{/if}
 
 		{#if c.numNodes > 1 && !c.crossesFabric}
-			<p class="text-emerald-400">
+			<p class="ok">
 				Fabric idle — every model-parallel group fits inside one node; extra nodes are independent
 				replicas.
 			</p>
 		{/if}
 	</div>
 </div>
+
+<style>
+	.topo { padding: var(--nd-space-4); border: 1px solid var(--nd-line-strong); background: var(--nd-surface-1); }
+	.head { flex-wrap: wrap; margin-bottom: var(--nd-space-3); }
+	.title { color: var(--nd-text); font-size: var(--nd-text-sm); font-weight: 500; }
+	.accent { color: var(--nd-accent); }
+	.spine { margin-bottom: var(--nd-space-3); }
+	.nodes { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--nd-space-3); }
+	@media (min-width: 640px) { .nodes { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+	.node {
+		overflow: hidden;
+		padding: var(--nd-space-2);
+		border: 1px solid var(--nd-line-strong);
+		background: color-mix(in srgb, var(--nd-surface-2) 40%, transparent);
+	}
+	.node-head {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: var(--nd-space-2);
+		color: var(--nd-text-dim);
+		font-size: 0.6875rem;
+		letter-spacing: 0.05em;
+		text-transform: uppercase;
+	}
+	.dot { width: 0.375rem; height: 0.375rem; }
+	.gpus { display: flex; align-items: center; gap: 2px; }
+	.gpu {
+		display: flex;
+		flex: 1;
+		align-items: center;
+		justify-content: center;
+		min-width: 0;
+		height: 2.25rem;
+		overflow: hidden;
+		padding: 0 2px;
+		border: 1px solid;
+		font-size: 0.625rem;
+		font-weight: 500;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+	.link { flex: none; width: 0.625rem; }
+	.more { margin-top: var(--nd-space-2); }
+	.key { display: grid; gap: var(--nd-space-1); margin-top: var(--nd-space-3); }
+	.key p { margin: 0; }
+	.key-row { display: flex; align-items: flex-start; gap: var(--nd-space-2); }
+	.key-row .swatch { margin-top: var(--nd-space-1); }
+</style>

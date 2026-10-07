@@ -9,12 +9,12 @@
 	let { label, checked = $bindable(), hint = '', info }: Props = $props();
 </script>
 
-<label class="flex cursor-pointer items-center justify-between gap-3">
+<label class="toggle">
 	<span>
-		<span class="flex items-center gap-1.5 text-sm text-slate-300">
+		<span class="field-label">
 			{label}{#if info}<InfoTip text={info} {label} />{/if}
 		</span>
-		{#if hint}<span class="block text-xs text-slate-500">{hint}</span>{/if}
+		{#if hint}<span class="hint">{hint}</span>{/if}
 	</span>
 	<button
 		type="button"
@@ -22,14 +22,40 @@
 		aria-checked={checked}
 		aria-label={label}
 		onclick={() => (checked = !checked)}
-		class="relative h-6 w-11 shrink-0 rounded-full transition-colors {checked
-			? 'bg-teal-500'
-			: 'bg-slate-700'}"
+		class="switch"
+		class:on={checked}
 	>
-		<span
-			class="absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white transition-transform {checked
-				? 'translate-x-5'
-				: ''}"
-		></span>
+		<span class="knob"></span>
 	</button>
 </label>
+
+<style>
+	.toggle { display: flex; align-items: center; justify-content: space-between; gap: var(--nd-space-3); cursor: pointer; }
+	.toggle .field-label { margin-bottom: 0; }
+	.hint { display: block; }
+	/* Square switch: NEONDECK has no round controls. */
+	.switch {
+		position: relative;
+		flex: none;
+		width: 2.75rem;
+		height: 1.5rem;
+		padding: 0;
+		border: 1px solid var(--nd-line-strong);
+		background: var(--nd-surface-2);
+		cursor: pointer;
+		transition: background var(--nd-dur-fast) var(--nd-ease), border-color var(--nd-dur-fast) var(--nd-ease);
+	}
+	.switch.on { border-color: var(--nd-accent); background: color-mix(in srgb, var(--nd-accent) 25%, transparent); }
+	.knob {
+		position: absolute;
+		top: 0.1875rem;
+		left: 0.1875rem;
+		width: 1rem;
+		height: 1rem;
+		background: var(--nd-text-dim);
+		transition: transform var(--nd-dur-fast) var(--nd-ease), background var(--nd-dur-fast) var(--nd-ease);
+	}
+	.switch.on .knob { transform: translateX(1.25rem); background: var(--nd-accent); }
+	.switch:focus-visible { outline: 2px solid var(--nd-focus); outline-offset: 2px; }
+	@media (prefers-reduced-motion: reduce) { .knob { transition: none; } }
+</style>

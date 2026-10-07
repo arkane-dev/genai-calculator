@@ -29,53 +29,38 @@
 	}
 </script>
 
-<section class="rounded-xl border border-slate-700 bg-slate-900/60 p-5">
-	<div class="mb-3 flex items-center justify-between gap-2">
-		<div class="flex items-center gap-1.5 text-sm font-medium text-slate-200">
+<section class="panel">
+	<div class="panel-head">
+		<h3 class="panel-title">
 			Compare scenarios
 			<InfoTip
 				text="Scenario A is the config you pinned; B is what's on screen now. Change any control and the B column updates live, so you can weigh two hardware or config choices side by side. Green marks the better side per row (faster / cheaper); Δ is B relative to A."
 			/>
-		</div>
+		</h3>
 		{#if onclear}
-			<button
-				type="button"
-				onclick={onclear}
-				class="rounded-md border border-slate-600 px-2 py-1 text-xs text-slate-400 hover:bg-slate-800"
-				>Clear</button
-			>
+			<button type="button" onclick={onclear} class="tool-btn">Clear</button>
 		{/if}
 	</div>
 
-	<div class="overflow-x-auto">
-		<table class="w-full text-sm">
-			<thead class="text-left text-xs text-slate-500">
+	<div class="scroll">
+		<table class="data-table">
+			<thead>
 				<tr>
-					<th class="py-1 pr-4"></th>
-					<th class="py-1 pr-4">A · {labelA}</th>
-					<th class="py-1 pr-4">B · {labelB}</th>
-					<th class="py-1">Δ (B vs A)</th>
+					<th><span class="sr">Metric</span></th>
+					<th>A · {labelA}</th>
+					<th>B · {labelB}</th>
+					<th>Δ (B vs A)</th>
 				</tr>
 			</thead>
 			<tbody>
 				{#each rows as r (r.label)}
 					{@const v = verdict(r)}
-					<tr class="border-t border-slate-800">
-						<td class="py-1.5 pr-4 text-slate-400">{r.label}</td>
-						<td
-							class="py-1.5 pr-4 font-mono {v.win === 'a' ? 'text-emerald-300' : 'text-slate-200'}"
-							>{r.a}</td
-						>
-						<td
-							class="py-1.5 pr-4 font-mono {v.win === 'b' ? 'text-emerald-300' : 'text-slate-200'}"
-							>{r.b}</td
-						>
-						<td
-							class="py-1.5 font-mono text-xs {v.win === 'b'
-								? 'text-emerald-400'
-								: v.win === 'a'
-									? 'text-amber-400'
-									: 'text-slate-500'}">{v.delta || '—'}</td
+					<tr>
+						<td class="dim">{r.label}</td>
+						<td class="num" class:ok={v.win === 'a'} class:bright={v.win !== 'a'}>{r.a}</td>
+						<td class="num" class:ok={v.win === 'b'} class:bright={v.win !== 'b'}>{r.b}</td>
+						<td class="num" class:ok={v.win === 'b'} class:warn={v.win === 'a'} class:mute={!v.win}
+							>{v.delta || '—'}</td
 						>
 					</tr>
 				{/each}
@@ -83,3 +68,9 @@
 		</table>
 	</div>
 </section>
+
+<style>
+	.scroll { overflow-x: auto; }
+	.data-table { font-size: var(--nd-text-sm); }
+	.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+</style>

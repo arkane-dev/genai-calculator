@@ -101,9 +101,9 @@
 	}));
 </script>
 
-<section class="rounded-xl border border-slate-700 bg-slate-900/60 p-5">
-	<div class="mb-3 flex flex-wrap items-center justify-between gap-3">
-		<div class="flex items-center gap-1.5 text-sm font-medium text-slate-200">
+<section class="panel">
+	<div class="panel-head">
+		<div class="panel-title">
 			Cost estimate
 			<InfoTip
 				text="Estimated pricing uses the median on-demand rate for this GPU across GPU cloud providers, with a typical discount for committed or spot capacity. Turn estimates off to enter your own $/GPU-hour, and every figure below is recomputed from it."
@@ -117,12 +117,12 @@
 	</div>
 
 	{#if useEstimated}
-		<div class="mb-3 rounded-lg border border-amber-600/40 bg-amber-500/5 p-3 text-xs text-amber-200">
-			<span class="font-semibold text-amber-300">Estimates only.</span>
+		<div class="notice spaced">
+			<span class="notice-title">Estimates only.</span>
 			Rates vary 2-3x between providers, and committed contracts or private pricing can change the
 			bill a lot. Get a real quote before you decide.
 		</div>
-		<div class="mb-4 flex flex-wrap items-end gap-4">
+		<div class="field-row spaced-l">
 			<Segmented
 				label="Purchasing"
 				bind:value={purchasing}
@@ -136,9 +136,9 @@
 			/>
 		</div>
 	{:else}
-		<div class="mb-3 rounded-lg border border-teal-700/40 bg-teal-500/[0.04] p-3">
-			<label class="block">
-				<span class="flex items-center gap-1.5 text-xs text-slate-300">
+		<div class="inset-accent spaced">
+			<label class="field">
+				<span class="field-label small">
 					$ / GPU-hour
 					<InfoTip
 						text="Your own price for one GPU for one hour. The whole-cluster cost is this × the {numGpus} GPU(s) sized here, so it scales as the workload changes."
@@ -149,10 +149,10 @@
 					bind:value={manualPerGpuHour}
 					min="0"
 					step="0.01"
-					class="mt-1 w-full max-w-[12rem] rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-100"
+					class="input narrow"
 				/>
 			</label>
-			<p class="mt-1.5 text-[11px] text-slate-500">
+			<p class="hint">
 				Cluster / hour = {fmtUsd(manualPerGpuHour || 0)} × {numGpus} GPU = {clusterPerHour == null
 					? '—'
 					: fmtUsd(clusterPerHour)}/hr. Your figure, not a market estimate.
@@ -160,13 +160,13 @@
 		</div>
 	{/if}
 
-	<div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
-		<div class="rounded-lg border border-slate-700 bg-slate-800/40 p-3">
-			<div class="text-[11px] tracking-wide text-slate-500 uppercase">GPUs billed</div>
-			<div class="mt-1 font-mono text-lg text-slate-100">
+	<div class="tiles">
+		<div class="tile">
+			<div class="tile-label">GPUs billed</div>
+			<div class="tile-value">
 				{useEstimated ? est.billableGpus : numGpus} ×
 			</div>
-			<div class="mt-0.5 text-xs text-slate-400">
+			<div class="tile-sub">
 				{useEstimated
 					? est.perGpuHour == null
 						? 'no market rate'
@@ -174,45 +174,45 @@
 					: 'your rate'}
 			</div>
 		</div>
-		<div class="rounded-lg border border-slate-700 bg-slate-800/40 p-3">
-			<div class="text-[11px] tracking-wide text-slate-500 uppercase">Cluster / hour</div>
-			<div class="mt-1 font-mono text-lg text-slate-100">
+		<div class="tile">
+			<div class="tile-label">Cluster / hour</div>
+			<div class="tile-value">
 				{clusterPerHour == null ? '—' : fmtUsd(clusterPerHour)}
 			</div>
-			<div class="mt-0.5 text-xs text-slate-400">
+			<div class="tile-sub">
 				{useEstimated ? `${PURCHASING_LABELS[purchasing]}${wholeNodes ? ' · whole nodes' : ''}` : 'your price'}
 			</div>
 		</div>
-		<div class="rounded-lg border border-slate-700 bg-slate-800/40 p-3">
-			<div class="text-[11px] tracking-wide text-slate-500 uppercase">Cluster / day</div>
-			<div class="mt-1 font-mono text-lg text-slate-100">
+		<div class="tile">
+			<div class="tile-label">Cluster / day</div>
+			<div class="tile-value">
 				{clusterPerHour == null ? '—' : fmtUsd(clusterPerHour * 24)}
 			</div>
-			<div class="mt-0.5 text-xs text-slate-400">24 × hourly</div>
+			<div class="tile-sub">24 × hourly</div>
 		</div>
 		{#if perUnit}
-			<div class="rounded-lg border border-emerald-700/50 bg-emerald-500/5 p-3">
-				<div class="text-[11px] tracking-wide text-emerald-400 uppercase">{perUnit.label}</div>
-				<div class="mt-1 font-mono text-lg text-emerald-300">{perUnit.value}</div>
-				<div class="mt-0.5 text-xs text-slate-400">{perUnit.sub}</div>
+			<div class="tile good">
+				<div class="tile-label">{perUnit.label}</div>
+				<div class="tile-value">{perUnit.value}</div>
+				<div class="tile-sub">{perUnit.sub}</div>
 			</div>
 		{:else}
-			<div class="rounded-lg border border-slate-700 bg-slate-800/40 p-3">
-				<div class="text-[11px] tracking-wide text-slate-500 uppercase">Cluster / month</div>
-				<div class="mt-1 font-mono text-lg text-slate-100">
+			<div class="tile">
+				<div class="tile-label">Cluster / month</div>
+				<div class="tile-value">
 					{clusterPerHour == null ? '—' : fmtUsd(clusterPerHour * 730)}
 				</div>
-				<div class="mt-0.5 text-xs text-slate-400">730 hr</div>
+				<div class="tile-sub">730 hr</div>
 			</div>
 		{/if}
 	</div>
 
 	{#if useEstimated && est.warning}
-		<p class="mt-3 rounded-lg border border-amber-600/40 bg-amber-500/5 p-2.5 text-xs text-amber-200">
+		<p class="notice space-top">
 			{est.warning}
 		</p>
 	{/if}
 	{#if useEstimated}
-		<p class="mt-2 text-[10px] text-slate-500">{PRICING_NOTE}</p>
+		<p class="note">{PRICING_NOTE}</p>
 	{/if}
 </section>

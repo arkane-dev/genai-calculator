@@ -22,32 +22,28 @@
 	const hot = $derived(!fits || (warnNearFull && fillPct >= 85));
 </script>
 
-<div class="flex h-full flex-col">
-	<div class="mb-2 flex items-baseline justify-between">
-		<span class="text-sm font-medium text-slate-200">HBM Memory</span>
-		<span class="font-mono text-xs {hot ? 'text-red-400' : 'text-slate-400'}">
+<div class="mem">
+	<div class="kv head">
+		<span class="title">HBM Memory</span>
+		<span class="num small" class:bad={hot} class:dim={!hot}>
 			{fmtBytes(used)} / {fmtBytes(capacity)}
-			{#if hot}<span class="ml-1">· {fillPct.toFixed(0)}% full</span>{/if}
+			{#if hot}<span>· {fillPct.toFixed(0)}% full</span>{/if}
 		</span>
 	</div>
 
-	<div
-		class="relative flex-1 overflow-hidden rounded-lg border bg-slate-900 {hot
-			? 'border-red-400/70'
-			: 'border-slate-600'}"
-	>
+	<div class="stack" class:hot>
 		<!-- stacked segments, top to bottom -->
-		<div class="flex h-full flex-col">
+		<div class="segs">
 			{#each segments as seg (seg.key)}
 				<div
-					class="relative flex items-center justify-between overflow-hidden px-2 transition-[height] duration-300 ease-out"
+					class="seg"
 					style:height="{pct(seg.bytes)}%"
 					style:background-color={seg.key === 'free' ? 'transparent' : seg.color}
-					style:border-top={seg.key === 'free' ? 'none' : '1px solid rgba(15,23,42,0.5)'}
+					style:border-top={seg.key === 'free' ? 'none' : '1px solid rgba(3, 4, 12, 0.5)'}
 				>
 					{#if pct(seg.bytes) > 7 && seg.key !== 'free'}
-						<span class="truncate text-xs font-medium text-slate-900">{seg.label}</span>
-						<span class="font-mono text-xs text-slate-900">{fmtBytes(seg.bytes)}</span>
+						<span class="seg-label">{seg.label}</span>
+						<span class="num seg-label">{fmtBytes(seg.bytes)}</span>
 					{/if}
 				</div>
 			{/each}
@@ -55,14 +51,59 @@
 
 		<!-- capacity line, shown when demand overflows the device -->
 		{#if !fits}
-			<div
-				class="pointer-events-none absolute inset-x-0 border-t-2 border-dashed border-red-300"
-				style:top="{capacityPct}%"
-			>
-				<span class="absolute -top-4 right-1 rounded bg-red-500 px-1 text-[10px] text-white">
-					capacity
-				</span>
+			<div class="cap" style:top="{capacityPct}%">
+				<span>capacity</span>
 			</div>
 		{/if}
 	</div>
 </div>
+
+<style>
+	.mem { display: flex; flex-direction: column; height: 100%; }
+	.head { margin-bottom: var(--nd-space-2); }
+	.title { color: var(--nd-text); font-size: var(--nd-text-sm); font-weight: 500; }
+	.stack {
+		position: relative;
+		flex: 1;
+		overflow: hidden;
+		border: 1px solid var(--nd-line-strong);
+		background: var(--nd-surface-1);
+	}
+	.stack.hot { border-color: var(--nd-red); }
+	.segs { display: flex; flex-direction: column; height: 100%; }
+	.seg {
+		position: relative;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		overflow: hidden;
+		padding: 0 var(--nd-space-2);
+		transition: height 300ms var(--nd-ease);
+	}
+	/* Dark text on the bright segment colours. */
+	.seg-label {
+		overflow: hidden;
+		color: var(--nd-text-on-neon);
+		font-size: var(--nd-text-xs);
+		font-weight: 500;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+	.cap {
+		position: absolute;
+		right: 0;
+		left: 0;
+		border-top: 2px dashed var(--nd-red);
+		pointer-events: none;
+	}
+	.cap span {
+		position: absolute;
+		top: -1rem;
+		right: var(--nd-space-1);
+		padding: 0 var(--nd-space-1);
+		background: var(--nd-red);
+		color: var(--nd-text-on-neon);
+		font-size: 0.625rem;
+	}
+	@media (prefers-reduced-motion: reduce) { .seg { transition: none; } }
+</style>

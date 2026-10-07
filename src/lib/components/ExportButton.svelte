@@ -29,11 +29,11 @@
 <button
 	type="button"
 	onclick={download}
-	class="inline-flex items-center gap-1.5 rounded-lg border border-slate-600 px-3 py-1.5 text-xs text-slate-300 hover:bg-slate-800"
+	class="tool-btn"
 	title="Download this scenario as a Markdown summary"
 >
 	{#if done}
-		<span class="text-emerald-400">✓</span> Report saved
+		<span class="ok">✓</span> Report saved
 	{:else}
 		⬇ Export report
 	{/if}

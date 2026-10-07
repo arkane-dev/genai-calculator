@@ -12,25 +12,19 @@
 	const flowDur = $derived(frac > 0.02 ? `${Math.max(0.35, 1.8 - frac * 1.5)}s` : '0s');
 </script>
 
-<div class="flex flex-col items-center gap-1">
+<div class="pipe">
 	{#if label}
-		<div class="flex w-full items-baseline justify-between text-xs">
-			<span class="text-slate-300">{label}</span>
-			<span class="font-mono text-slate-400">{detail}</span>
+		<div class="kv small">
+			<span class="dim">{label}</span>
+			<span class="num mute">{detail}</span>
 		</div>
 	{/if}
-	<div
-		class="relative h-6 w-full overflow-hidden rounded-full border border-slate-600 bg-slate-900"
-	>
+	<div class="tube">
 		<!-- fill -->
-		<div
-			class="absolute inset-y-0 left-0 transition-[width] duration-300 ease-out"
-			style:width="{pct}%"
-			style:background-color={color}
-		></div>
+		<div class="fill" style:width="{pct}%" style:background-color={color}></div>
 		<!-- animated flow stripes over the filled portion -->
 		<div
-			class="pipe-flow absolute inset-y-0 left-0 transition-[width] duration-300 ease-out"
+			class="fill pipe-flow"
 			style:width="{pct}%"
 			style:--flow-dur={flowDur}
 			style:opacity={frac > 0.02 ? 0.5 : 0}
@@ -39,10 +33,27 @@
 </div>
 
 <style>
+	.pipe { display: flex; flex-direction: column; align-items: center; gap: var(--nd-space-1); }
+	.pipe .kv { width: 100%; }
+	.tube {
+		position: relative;
+		width: 100%;
+		height: 1.5rem;
+		overflow: hidden;
+		border: 1px solid var(--nd-line-strong);
+		background: var(--nd-surface-1);
+	}
+	.fill {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		left: 0;
+		transition: width 300ms var(--nd-ease);
+	}
 	.pipe-flow {
 		background-image: repeating-linear-gradient(
 			-60deg,
-			rgba(255, 255, 255, 0.35) 0 8px,
+			color-mix(in srgb, var(--nd-text) 35%, transparent) 0 8px,
 			transparent 8px 20px
 		);
 		background-size: 200% 100%;
@@ -54,8 +65,7 @@
 		}
 	}
 	@media (prefers-reduced-motion: reduce) {
-		.pipe-flow {
-			animation: none;
-		}
+		.pipe-flow { animation: none; }
+		.fill { transition: none; }
 	}
 </style>

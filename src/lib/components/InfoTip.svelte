@@ -62,7 +62,7 @@
 		e.preventDefault();
 		open = !open;
 	}}
-	class="inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-slate-600 align-middle text-[10px] leading-none font-semibold text-slate-400 hover:border-teal-400 hover:text-teal-300"
+	class="tip-btn"
 >
 	i
 </button>
@@ -73,7 +73,7 @@
 		type="button"
 		aria-hidden="true"
 		tabindex="-1"
-		class="fixed inset-0 z-[59] cursor-default"
+		class="tip-scrim"
 		onclick={(e) => {
 			e.stopPropagation();
 			e.preventDefault();
@@ -86,8 +86,66 @@
 		role="tooltip"
 		style:top="{pos.top}px"
 		style:left="{pos.left}px"
-		class="fixed z-[60] w-60 rounded-lg border border-slate-600 bg-slate-800 p-3 text-xs leading-relaxed font-normal tracking-normal text-slate-200 normal-case shadow-xl"
+		class="tip-pop"
 	>
 		{text}
 	</span>
 {/if}
+
+<style>
+	/* 24px hit area (WCAG 2.5.8) around a 16px visible box; negative margins keep the layout. */
+	.tip-btn {
+		position: relative;
+		display: inline-flex;
+		flex: none;
+		align-items: center;
+		justify-content: center;
+		width: 1.5rem;
+		height: 1.5rem;
+		margin: -0.25rem;
+		padding: 0;
+		border: 0;
+		background: transparent;
+		color: var(--nd-text-dim);
+		font-family: var(--nd-font-mono);
+		font-size: 0.625rem;
+		font-weight: 600;
+		line-height: 1;
+		vertical-align: middle;
+		text-transform: none;
+		cursor: pointer;
+	}
+	.tip-btn::before {
+		content: '';
+		position: absolute;
+		inset: 0.25rem;
+		border: 1px solid var(--nd-text-mute);
+	}
+	.tip-btn:hover::before { border-color: var(--nd-accent); }
+	.tip-btn:focus-visible { outline: 2px solid var(--nd-focus); outline-offset: -2px; }
+	.tip-btn:hover { color: var(--nd-accent); }
+	/* Portalled to <body>, so these must be global. */
+	:global(.tip-scrim) {
+		position: fixed;
+		inset: 0;
+		z-index: 59;
+		border: 0;
+		background: transparent;
+		cursor: default;
+	}
+	:global(.tip-pop) {
+		position: fixed;
+		z-index: 60;
+		width: 15rem;
+		padding: var(--nd-space-3);
+		border: 1px solid var(--nd-line-strong);
+		background: var(--nd-surface-3);
+		color: var(--nd-text);
+		font-family: var(--nd-font-body);
+		font-size: var(--nd-text-xs);
+		font-weight: 400;
+		line-height: 1.6;
+		letter-spacing: 0;
+		text-transform: none;
+	}
+</style>

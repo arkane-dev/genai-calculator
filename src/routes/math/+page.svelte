@@ -100,14 +100,16 @@
 
 <svelte:head><title>GenAI Calculator — Math</title></svelte:head>
 
-<div class="mx-auto max-w-6xl px-6 py-8">
-	<header class="mb-4">
-		<h1 class="text-2xl font-semibold text-slate-100">Show the math</h1>
-		<p class="mt-1 text-sm text-slate-400">
+<div class="page narrow">
+	<header class="page-head">
+		<div>
+			<h1 class="page-title">Show the math</h1>
+		<p class="lede">
 			The calculation chain behind the current config — every formula symbolically, then with your
 			numbers, then the result. Tied to the shared config, so it matches Modelling / Workload /
 			Training exactly.
 		</p>
+		</div>
 	</header>
 
 	<HowTo>
@@ -119,11 +121,11 @@
 		</p>
 	</HowTo>
 
-	<div class="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-[320px_1fr]">
+	<div class="layout">
 		<aside
-			class="lg:sticky lg:top-6 lg:max-h-[calc(100vh-3rem)] lg:self-start lg:overflow-y-auto lg:pr-1"
+			class="sidebar"
 		>
-			<div class="flex flex-col gap-4 rounded-xl border border-slate-700 bg-slate-900/60 p-5">
+			<div class="panel controls tight">
 				<Segmented
 					label="View"
 					bind:value={view}
@@ -134,11 +136,11 @@
 				/>
 				<Controls bind:config {isMoe} models={MODELS} />
 				{#if view === 'training'}
-					<div class="border-t border-slate-700 pt-4">
-						<div class="mb-2 text-xs font-medium tracking-wide text-slate-400 uppercase">
+					<div class="group">
+						<div class="group-title">
 							Training recipe
 						</div>
-						<div class="flex flex-col gap-3">
+						<div class="stack-m">
 							<Segmented
 								label="Method"
 								bind:value={method}
@@ -201,28 +203,26 @@
 			</div>
 		</aside>
 
-		<div class="flex flex-col gap-6">
+		<div class="results">
 			{#each sections as section (section.title)}
-				<section class="rounded-xl border border-slate-700 bg-slate-900/60 p-5">
-					<h2 class="text-sm font-semibold tracking-wide text-teal-300 uppercase">
+				<section class="panel">
+					<h2 class="section-title">
 						{section.title}
 					</h2>
-					{#if section.intro}<p class="mt-1 text-xs text-slate-400">{section.intro}</p>{/if}
-					<div class="mt-3 flex flex-col divide-y divide-slate-800">
+					{#if section.intro}<p class="section-intro">{section.intro}</p>{/if}
+					<div class="steps">
 						{#each section.steps as step (step.label)}
-							<div
-								class="grid grid-cols-1 gap-1 py-3 sm:grid-cols-[1fr_auto] sm:items-center sm:gap-4"
-							>
-								<div class="min-w-0">
-									<div class="text-xs text-slate-400">{step.label}</div>
+							<div class="step">
+								<div class="step-main">
+									<div class="small dim">{step.label}</div>
 									<!-- Scrollable, so it must take keyboard focus (WCAG 2.1.1). -->
 									<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
-									<div class="mt-1 overflow-x-auto text-slate-100" tabindex="0" role="region" aria-label="{step.label}">
+									<div class="formula" tabindex="0" role="region" aria-label="{step.label}">
 										<Latex display math={`${step.formula} \\;=\\; ${step.substituted}`} />
 									</div>
-									{#if step.note}<div class="mt-1 text-[11px] text-slate-500">{step.note}</div>{/if}
+									{#if step.note}<div class="step-note">{step.note}</div>{/if}
 								</div>
-								<div class="shrink-0 font-mono text-sm text-emerald-300 sm:text-right">
+								<div class="step-result num">
 									{step.result}
 								</div>
 							</div>
@@ -233,3 +233,30 @@
 		</div>
 	</div>
 </div>
+
+<style>
+	.section-title {
+		margin: 0;
+		color: var(--nd-accent);
+		font-size: var(--nd-text-sm);
+		letter-spacing: 0.05em;
+	}
+	.section-intro { margin: var(--nd-space-1) 0 0; color: var(--nd-text-dim); font-size: var(--nd-text-xs); }
+	.steps { display: flex; flex-direction: column; margin-top: var(--nd-space-3); }
+	.step {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr);
+		gap: var(--nd-space-1);
+		padding: var(--nd-space-3) 0;
+	}
+	.step + .step { border-top: 1px solid var(--nd-surface-2); }
+	@media (min-width: 640px) {
+		.step { grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: var(--nd-space-4); }
+		.step-result { text-align: right; }
+	}
+	.step-main { min-width: 0; }
+	.formula { margin-top: var(--nd-space-1); overflow-x: auto; color: var(--nd-text); }
+	.formula:focus-visible { outline: 2px solid var(--nd-focus); outline-offset: 2px; }
+	.step-note { margin-top: var(--nd-space-1); color: var(--nd-text-mute); font-size: 0.6875rem; }
+	.step-result { flex: none; color: var(--nd-jade); font-size: var(--nd-text-sm); }
+</style>

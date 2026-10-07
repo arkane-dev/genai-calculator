@@ -387,21 +387,21 @@
 
 <svelte:head><title>GenAI Calculator — Modelling</title></svelte:head>
 
-<div class="min-h-screen bg-slate-950 text-slate-100">
-	<div class="mx-auto max-w-7xl px-6 py-8">
-		<header class="mb-6 flex items-start justify-between gap-4">
+<div>
+	<div class="page">
+		<header class="page-head">
 			<div>
-				<h1 class="text-2xl font-semibold">Modelling</h1>
-				<p class="mt-1 text-sm text-slate-400">
+				<h1 class="page-title">Modelling</h1>
+				<p class="lede">
 					Transformer inference sizing. Will it fit, and how fast will it decode. First-order
 					roofline estimates.
 				</p>
 			</div>
-			<div class="flex items-center gap-2">
+			<div class="row">
 				<button
 					type="button"
 					onclick={() => (pinned = { ...config })}
-					class="inline-flex items-center gap-1.5 rounded-lg border border-slate-600 px-3 py-1.5 text-xs text-slate-300 hover:bg-slate-800"
+					class="tool-btn"
 					title="Pin this config as scenario A, then change controls to compare B against it"
 				>
 					{pinned ? 'Re-pin' : 'Pin to compare'}
@@ -429,15 +429,12 @@
 				a close guide.
 			</p>
 
-			<p class="mt-3 font-medium text-slate-300">Try it in three steps</p>
-			<ol class="mt-1 ml-4 list-decimal space-y-1">
+			<p class="sub-title">Try it in three steps</p>
+			<ol class="bullets numbered">
 				<li>
 					On the left, pick a <strong>model</strong> (the AI) and a <strong>GPU</strong> (the chip
 					that runs it). Every control has an
-					<span
-						class="inline-flex h-4 w-4 items-center justify-center rounded-full border border-slate-600 text-[10px] font-semibold text-slate-400"
-						>i</span
-					> button that explains it.
+					<span class="i-badge" aria-hidden="true">i</span> button that explains it.
 				</li>
 				<li>
 					Set how many GPUs you have and how you split the model across them, then how much work you
@@ -449,8 +446,8 @@
 				</li>
 			</ol>
 
-			<p class="mt-3 font-medium text-slate-300">What the pictures mean</p>
-			<ul class="mt-1 ml-4 list-disc space-y-1">
+			<p class="sub-title">What the pictures mean</p>
+			<ul class="bullets">
 				<li>
 					<strong>Memory box</strong> — everything that must fit in the GPU's memory: the model's weights,
 					the KV cache (its memory of the conversation), and working space. If the box overflows, it won't
@@ -470,14 +467,14 @@
 				</li>
 			</ul>
 
-			<p class="mt-3">
+			<p class="space-top">
 				A model always has one thing slowing it down most — the <strong>bottleneck</strong>. It's
 				either waiting on memory, waiting on math, or waiting to talk to other GPUs. The tool tells
 				you which, so you know what to fix.
 			</p>
 
-			<p class="mt-3 font-medium text-slate-300">Supported model types</p>
-			<ul class="mt-1 ml-4 list-disc space-y-1">
+			<p class="sub-title">Supported model types</p>
+			<ul class="bullets">
 				<li>
 					<strong>Language models</strong> — the familiar chatbots and text models (Llama, Qwen, DeepSeek,
 					GLM, Nemotron, and more). Dense and mixture-of-experts (MoE), including latent-attention (MLA)
@@ -522,13 +519,13 @@
 					world model: it also rolls a predictor forward over a planning horizon.
 				</li>
 			</ul>
-			<p class="mt-2 text-xs text-slate-500">
+			<p class="hint space-top-s">
 				Pick the type from the grouped model menu on the left. The controls and result cards change
 				to match the type you chose.
 			</p>
 
-			<p class="mt-3 font-medium text-slate-300">Word list</p>
-			<ul class="mt-1 ml-4 list-disc space-y-1">
+			<p class="sub-title">Word list</p>
+			<ul class="bullets">
 				<li>
 					<strong>Token</strong> — a chunk of text, roughly a short word or word-piece. Models read and
 					write in tokens.
@@ -560,47 +557,45 @@
 				</li>
 			</ul>
 
-			<p class="mt-3">
+			<p class="space-top">
 				Want the opposite — you know your users and speed goals and want to know how many GPUs to
 				buy? Use the <a href="{base}/">Workload</a> tab.
 			</p>
 		</HowTo>
 
-		<div class="grid grid-cols-1 gap-6 lg:grid-cols-[320px_1fr]">
+		<div class="layout">
 			<!-- controls -->
 			<aside
-				class="lg:sticky lg:top-6 lg:max-h-[calc(100vh-3rem)] lg:self-start lg:overflow-y-auto lg:pr-1"
+				class="sidebar"
 			>
-				<div class="rounded-xl border border-slate-700 bg-slate-900/60 p-5">
+				<div class="panel">
 					<Controls bind:config {isMoe} models={allModels} />
-					<div class="mt-4 border-t border-slate-700 pt-4">
-						<label
-							class="block cursor-pointer rounded-lg border border-dashed border-slate-600 px-3 py-2 text-center text-xs text-slate-400 hover:bg-slate-800"
-						>
+					<div class="group upload">
+						<label class="upload-btn">
 							+ Add model from JSON
 							<input
 								type="file"
 								accept=".json,application/json,text/plain"
-								class="hidden"
+								class="visually-hidden"
 								onchange={onModelFile}
 							/>
 						</label>
-						<p class="mt-1 text-center text-[10px] text-slate-600">
+						<p class="hint centered">
 							a HuggingFace config.json or a ModelSpec
 						</p>
 						{#if uploadError}
-							<p class="mt-1 text-[10px] text-red-400">{uploadError}</p>
+							<p class="hint bad">{uploadError}</p>
 						{/if}
 					</div>
 				</div>
 			</aside>
 
 			<!-- results -->
-			<main class="flex flex-col gap-6">
+			<main class="results">
 				<SanityNotes notes={sanity} />
 				<!-- headline numbers -->
 				{#if p.diffusion}
-					<div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+					<div class="tiles cols-6">
 						<StatCard
 							label="Fits on device"
 							value={p.perGpu.fits ? 'Yes' : 'No'}
@@ -666,7 +661,7 @@
 						/>
 					</div>
 				{:else if p.asr}
-					<div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+					<div class="tiles cols-6">
 						<StatCard
 							label="Fits on device"
 							value={p.perGpu.fits ? 'Yes' : 'No'}
@@ -711,7 +706,7 @@
 						/>
 					</div>
 				{:else if p.vla}
-					<div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+					<div class="tiles cols-6">
 						<StatCard
 							label="Fits on device"
 							value={p.perGpu.fits ? 'Yes' : 'No'}
@@ -757,7 +752,7 @@
 						/>
 					</div>
 				{:else if p.encoder}
-					<div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+					<div class="tiles cols-6">
 						<StatCard
 							label="Fits on device"
 							value={p.perGpu.fits ? 'Yes' : 'No'}
@@ -806,7 +801,7 @@
 						/>
 					</div>
 				{:else if p.jepa}
-					<div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+					<div class="tiles cols-6">
 						<StatCard
 							label="Fits on device"
 							value={p.perGpu.fits ? 'Yes' : 'No'}
@@ -854,7 +849,7 @@
 						/>
 					</div>
 				{:else}
-					<div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+					<div class="tiles cols-6">
 						<StatCard
 							label="Fits on device"
 							value={p.perGpu.fits ? 'Yes' : 'No'}
@@ -908,9 +903,9 @@
 				{/if}
 
 				<!-- memory -> pipe -> compute -->
-				<section class="rounded-xl border border-slate-700 bg-slate-900/60 p-5">
-					<div class="grid grid-cols-1 items-stretch gap-4 md:grid-cols-[1fr_1.2fr_1.4fr]">
-						<div class="min-h-[22rem]">
+				<section class="panel">
+					<div class="mem-split three">
+						<div class="mem-chart">
 							<MemoryStack
 								segments={p.segments}
 								capacity={p.perGpu.capacity}
@@ -919,16 +914,14 @@
 							/>
 						</div>
 
-						<div class="flex flex-col justify-center">
+						<div class="pipe-col">
 							<Pipe
 								frac={p.memBwFrac}
 								color={COLORS.memPipe}
 								label="HBM bandwidth"
 								detail="{p.bandwidthUsedGBs.toFixed(0)} / {p.bandwidthPeakGBs.toFixed(0)} GB/s"
 							/>
-							<div
-								class="mt-2 flex items-center justify-center gap-1.5 text-center text-xs text-slate-500"
-							>
+							<div class="readout">
 								{Math.round(p.memBwFrac * 100)}% of {gpu.memBandwidthTBs} TB/s
 								<InfoTip
 									text="How fast the GPU reads its memory, versus the fastest it possibly could. Writing each new word means re-reading the model's weights, so during decode this pipe is usually the real speed limit. When it's near 100%, the GPU is 'memory-bound' — waiting on memory, not on math."
@@ -936,17 +929,15 @@
 							</div>
 						</div>
 
-						<div class="flex flex-col">
+						<div class="die-col">
 							<ComputeDie units={dieUnits} />
-							<div
-								class="mt-2 flex items-center justify-center gap-1.5 text-center text-xs text-slate-500"
-							>
+							<div class="readout">
 								{p.computeAchievedTflops.toFixed(0)} / {p.computePeakTflops.toFixed(0)} TFLOPS
 								<InfoTip
 									text="How much math the GPU is doing, versus the most it can (TFLOPS = trillions of math operations per second). Reading a long question ('prefill') is heavy on math and lights this up; writing words one at a time ('decode') uses little. When it's near 100%, the GPU is 'compute-bound' — limited by math speed."
 								/>
 							</div>
-							<div class="mt-1 text-center text-[10px] text-slate-600">
+							<div class="hint centered">
 								HBM I/O tracks memory bandwidth, L2 tracks the hotter of memory/compute (so it stays
 								busy in prefill), link tracks interconnect; scheduler shown structural
 							</div>
@@ -956,7 +947,7 @@
 
 				<!-- interconnect: nodes + fabric -->
 				<section>
-					<div class="mb-2 flex items-center gap-1.5 text-sm text-slate-300">
+					<div class="field-label">
 						Interconnect
 						<InfoTip
 							text="When a model is split across several GPUs, they must swap results after every step. This shows those links: fast NVLink cables between GPUs inside one server, and the slower network (InfiniBand or RDMA Ethernet) between servers. If a link fills up, the GPUs spend time waiting to talk instead of working — 'network-bound'."
@@ -1004,7 +995,7 @@
 						8}
 				/>
 
-				<p class="text-xs text-slate-600">
+				<p class="small mute">
 					First-order roofline (MBU 0.8, MFU 0.7) with 1.5 GB runtime overhead per GPU. MoE/EP
 					sharding, activation memory and KV allocation waste are approximate; projected models are
 					estimates from the current generation.
@@ -1013,3 +1004,19 @@
 		</div>
 	</div>
 </div>
+
+<style>
+	.pipe-col { display: flex; flex-direction: column; justify-content: center; }
+	.die-col { display: flex; flex-direction: column; }
+	.readout {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.375rem;
+		margin-top: var(--nd-space-2);
+		color: var(--nd-text-mute);
+		font-size: var(--nd-text-xs);
+		text-align: center;
+	}
+	.upload { margin-top: var(--nd-space-4); }
+</style>

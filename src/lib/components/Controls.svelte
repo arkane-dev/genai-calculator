@@ -171,9 +171,9 @@
 				: String(n);
 </script>
 
-<div class="flex flex-col gap-5">
+<div class="controls">
 	<div>
-		<div class="mb-1 flex items-center gap-1.5 text-sm text-slate-300">
+		<div class="field-label">
 			Model
 			<InfoTip
 				text="The AI model you want to run. Bigger models are smarter but need more memory and run slower. 'MoE' models are large but only use a slice of themselves for each word, so they run faster than their size suggests. You can also upload your own."
@@ -182,7 +182,7 @@
 		<select
 			aria-label="Model"
 			bind:value={config.modelId}
-			class="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-100"
+			class="input"
 		>
 			{#each groups as grp (grp.label)}
 				<optgroup label={grp.label}>
@@ -195,7 +195,7 @@
 	</div>
 
 	<div>
-		<div class="mb-1 flex items-center gap-1.5 text-sm text-slate-300">
+		<div class="field-label">
 			GPU
 			<InfoTip
 				text="The chip that runs the model. Each GPU has a fixed amount of memory and a top math speed. The app uses the real specs of the one you pick to work out whether the model fits and how fast it goes."
@@ -205,7 +205,7 @@
 			aria-label="GPU"
 			bind:value={config.gpuId}
 			onchange={() => (config.fabricId = defaultFabricFor(config.gpuId))}
-			class="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-100"
+			class="input"
 		>
 			{#each GPUS as g (g.id)}
 				<option value={g.id}>{g.name}</option>
@@ -225,15 +225,15 @@
 		options={instanceOptions}
 		info="How many servers (instances) you're using. Total GPUs = instances × GPUs-per-node. More GPUs give more memory and serve more users; a single model only runs faster if you also split it across them (see the parallelism controls below)."
 	/>
-	<p class="-mt-2 text-[10px] text-slate-500">
-		= <span class="font-mono text-slate-400"
+	<p class="hint tight">
+		= <span class="num dim"
 			>{config.numGpus} GPU{config.numGpus === 1 ? '' : 's'}</span
 		>
 		total ({nodes} × {config.gpusPerNode})
 	</p>
 
 	<div>
-		<div class="mb-1 flex items-center gap-1.5 text-sm text-slate-300">
+		<div class="field-label">
 			Network fabric (per GPU)
 			<InfoTip
 				text="The network that connects separate servers, such as InfiniBand or RDMA Ethernet. It only matters when a model is split across more than one server — then this is how the servers pass results to each other."
@@ -242,7 +242,7 @@
 		<select
 			aria-label="Network fabric (per GPU)"
 			bind:value={config.fabricId}
-			class="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-100"
+			class="input"
 		>
 			<optgroup label="InfiniBand / Ethernet">
 				{#each otherFabrics as f (f.id)}
@@ -264,7 +264,7 @@
 		info="Splits each layer's math across several GPUs so they share one big calculation. Helps a model that's too big or too slow for one GPU, but the GPUs must talk constantly, so very high TP can waste time on chatter."
 	/>
 
-	<div class="flex flex-col gap-2 rounded-lg border border-slate-700 bg-slate-800/40 p-3">
+	<div class="tile stack-s">
 		<Toggle
 			label="Pipeline parallel (PP)"
 			bind:checked={config.ppEnabled}
@@ -282,7 +282,7 @@
 	</div>
 
 	{#if isMoe && !isDiffusion && !isJepa && !isEncoder}
-		<div class="flex flex-col gap-2 rounded-lg border border-slate-700 bg-slate-800/40 p-3">
+		<div class="tile stack-s">
 			<Toggle
 				label="Expert parallel (EP)"
 				bind:checked={config.epEnabled}
@@ -390,7 +390,7 @@
 			info="How many audio streams the GPU transcribes in parallel. Each contributes one {modelOf
 				?.asr?.audioWindowSec ?? 30}-second window of audio per inference cycle."
 		/>
-		<p class="text-[10px] text-slate-500">
+		<p class="hint">
 			Each cycle: encoder over {modelOf?.asr?.audioTokens ?? 1500} audio tokens ({modelOf?.asr
 				?.audioWindowSec ?? 30}s of audio) + autoregressive decode of ~{modelOf?.asr
 				?.avgTextTokens ?? 128} text tokens.
@@ -404,7 +404,7 @@
 			step={1}
 			info="How many robot observations the GPU serves in parallel. Each contributes one observation → one action chunk per inference cycle. On a single robot this stays at 1."
 		/>
-		<p class="text-[10px] text-slate-500">
+		<p class="hint">
 			Each cycle reads {modelOf?.vla?.camerasPerObs ?? 3} cameras and produces a chunk of
 			{modelOf?.vla?.chunkSize ?? 50} actions in
 			{modelOf?.vla?.flowSteps ?? 10} flow-matching steps. Target control rate:
@@ -447,8 +447,8 @@
 			display="{fmtSeq(config.outputTokens)} tok"
 			info="How long the answer is, in tokens. The model writes output one word at a time, so more output means a longer total wait for the user. Reasoning models (R1, QwQ, o-series) emit long chains of thought — 32k–64k output is normal."
 		/>
-		<p class="-mt-2 text-[10px] text-slate-500">
-			Total context = input + output = <span class="font-mono text-slate-400"
+		<p class="hint tight">
+			Total context = input + output = <span class="num dim"
 				>{fmtSeq(config.inputTokens + config.outputTokens)} tok</span
 			>{#if isVlm}
 				+ {config.imagesPerRequest} image{config.imagesPerRequest === 1 ? '' : 's'} × {modelOf?.vlm
@@ -479,7 +479,7 @@
 		/>
 
 		{#if config.phase === 'decode'}
-			<div class="flex flex-col gap-2 rounded-lg border border-slate-700 bg-slate-800/40 p-3">
+			<div class="tile stack-s">
 				<Toggle
 					label="Speculative decoding"
 					bind:checked={config.specDecode}
@@ -510,7 +510,7 @@
 	{/if}
 
 	<div>
-		<div class="mb-1 flex items-center gap-1.5 text-sm text-slate-300">
+		<div class="field-label">
 			Weight format
 			<InfoTip
 				text="How precisely each of the model's numbers is stored. Fewer bits (like FP8 or FP4) shrink the model so it fits in less memory and can run faster, with a small drop in accuracy. More bits (FP16/BF16) are the most accurate but largest."
@@ -519,7 +519,7 @@
 		<select
 			aria-label="Weight format"
 			bind:value={config.weightFormatId}
-			class="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-100"
+			class="input"
 		>
 			{#each WEIGHT_FORMATS as f (f.id)}
 				<option value={f.id} disabled={!!gpuOf && !gpuSupportsFormat(gpuOf, f)}

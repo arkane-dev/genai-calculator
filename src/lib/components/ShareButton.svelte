@@ -33,13 +33,13 @@
 <button
 	type="button"
 	onclick={copy}
-	class="inline-flex items-center gap-1.5 rounded-lg border border-slate-600 px-3 py-1.5 text-xs text-slate-300 hover:bg-slate-800"
+	class="tool-btn"
 	title="Copy a link that reopens this exact configuration"
 >
 	{#if copied}
-		<span class="text-emerald-400">✓</span> Link copied
+		<span class="ok">✓</span> Link copied
 	{:else if failed}
-		<span class="text-red-400">✗</span> Couldn't copy
+		<span class="bad">✗</span> Couldn't copy
 	{:else}
 		Share this setup
 	{/if}

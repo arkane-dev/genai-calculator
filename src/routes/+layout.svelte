@@ -1,5 +1,6 @@
 <script lang="ts">
-	import './layout.css';
+	import '@cyberpunk-apps/neondeck/styles.css';
+	import '$lib/styles/calc.css';
 	import { base } from '$app/paths';
 	import { page } from '$app/state';
 	import { AppShell, Tag } from '@cyberpunk-apps/neondeck';
