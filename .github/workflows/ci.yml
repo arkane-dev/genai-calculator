@@ -1,0 +1,58 @@
+# Check the calculator on every push and pull request. On a push to main that passes,
+# redeploy andrewrkane.com, which builds the calculator into /tools/genai-calculator.
+#
+# The redeploy needs the SITE_DEPLOY_TOKEN secret: a fine-grained token for
+# arkane-dev/andrewrkane.com with "Actions: Read and write". Without it, that step skips.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the calculator
+        uses: actions/checkout@v7
+        with:
+          path: genai-calculator
+
+      # NEONDECK installs from ../sharable_assets, as on the dev machine.
+      - name: Check out NEONDECK
+        uses: actions/checkout@v7
+        with:
+          repository: arkane-dev/neondeck
+          path: sharable_assets
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: lts/*
+
+      - name: Build NEONDECK
+        working-directory: sharable_assets/neondeck
+        run: npm ci --no-audit --no-fund && npm run build
+
+      - name: Type check and test
+        working-directory: genai-calculator
+        run: |
+          npm ci --no-audit --no-fund
+          npm run check
+          npx vitest run --project server
+
+  redeploy-site:
+    needs: check
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger the andrewrkane.com deploy
+        env:
+          GH_TOKEN: ${{ secrets.SITE_DEPLOY_TOKEN }}
+        run: |
+          if [ -z "$GH_TOKEN" ]; then
+            echo "::notice::SITE_DEPLOY_TOKEN is not set, so the site was not redeployed."
+            exit 0
+          fi
+          gh workflow run deploy.yml -R arkane-dev/andrewrkane.com --ref main
+          echo "Site deploy triggered."
