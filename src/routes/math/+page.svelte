@@ -215,6 +215,8 @@
 							>
 								<div class="min-w-0">
 									<div class="text-xs text-slate-400">{step.label}</div>
+									<!-- Scrollable, so it must take keyboard focus (WCAG 2.1.1). -->
+									<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 									<div class="mt-1 overflow-x-auto text-slate-100" tabindex="0" role="region" aria-label="{step.label}">
 										<Latex display math={`${step.formula} \\;=\\; ${step.substituted}`} />
 									</div>
