@@ -43,9 +43,19 @@ in the tool is editable.
 
 ## Run it
 
+The look comes from NEONDECK, which installs from a folder beside this repo:
+
+```sh
+mkdir cyberpunk_apps && cd cyberpunk_apps
+git clone https://github.com/arkane-dev/genai-calculator
+git clone https://github.com/arkane-dev/neondeck sharable_assets
+(cd sharable_assets/neondeck && npm install && npm run build)
+```
+
 Node lives in a project-local environment (uv + nodeenv):
 
 ```sh
+cd genai-calculator
 uv venv .venv && uv pip install --python .venv nodeenv
 .venv/bin/nodeenv -p --node=lts
 source .venv/bin/activate
@@ -63,4 +73,4 @@ npm test             # vitest
 npm run lint         # prettier + eslint
 ```
 
-Set `BASE_PATH` to build for a subpath, e.g. `BASE_PATH=/tools/genai-calculator npm run build`.
+Set `BASE_PATH` to build for a subpath. The live copy at [andrewrkane.com/tools/genai-calculator](https://andrewrkane.com/tools/genai-calculator/) is built with `BASE_PATH=/tools/genai-calculator` as part of the website's build.
