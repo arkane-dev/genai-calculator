@@ -404,7 +404,7 @@
 					class="inline-flex items-center gap-1.5 rounded-lg border border-slate-600 px-3 py-1.5 text-xs text-slate-300 hover:bg-slate-800"
 					title="Pin this config as scenario A, then change controls to compare B against it"
 				>
-					📌 {pinned ? 'Re-pin' : 'Pin to compare'}
+					{pinned ? 'Re-pin' : 'Pin to compare'}
 				</button>
 				<ExportButton report={buildReport} filename="gpu-sizing-modelling" />
 				<ShareButton payload={config} />
@@ -604,7 +604,7 @@
 						<StatCard
 							label="Fits on device"
 							value={p.perGpu.fits ? 'Yes' : 'No'}
-							accent={p.perGpu.fits ? '#34d399' : '#f87171'}
+							accent={p.perGpu.fits ? '#3ff0b8' : '#ff3b52'}
 							sub={p.perGpu.fits
 								? `${fmtBytes(p.perGpu.headroom)} free / GPU`
 								: `${fmtBytes(-p.perGpu.headroom)} over / GPU`}
@@ -658,7 +658,7 @@
 						<StatCard
 							label={isVideoDiff ? 'Max clips / GPU' : 'Max images / GPU'}
 							value={fmtTps(p.maxConcurrentSeqs)}
-							accent={config.batchSize <= p.maxConcurrentSeqs ? '#34d399' : '#f87171'}
+							accent={config.batchSize <= p.maxConcurrentSeqs ? '#3ff0b8' : '#ff3b52'}
 							sub="in leftover memory"
 							info="How many {isVideoDiff
 								? 'clips'
@@ -670,7 +670,7 @@
 						<StatCard
 							label="Fits on device"
 							value={p.perGpu.fits ? 'Yes' : 'No'}
-							accent={p.perGpu.fits ? '#34d399' : '#f87171'}
+							accent={p.perGpu.fits ? '#3ff0b8' : '#ff3b52'}
 							sub={p.perGpu.fits
 								? `${fmtBytes(p.perGpu.headroom)} free / GPU`
 								: `${fmtBytes(-p.perGpu.headroom)} over / GPU`}
@@ -680,7 +680,7 @@
 							label="Real-time factor"
 							value={p.asr.rtf.toFixed(p.asr.rtf < 10 ? 1 : 0)}
 							unit="×"
-							accent={p.asr.rtf >= 1 ? '#34d399' : '#f87171'}
+							accent={p.asr.rtf >= 1 ? '#3ff0b8' : '#ff3b52'}
 							sub={p.asr.rtf >= 1 ? 'faster than real-time' : 'slower than real-time'}
 							info="Audio duration ÷ processing time. RTF ≥ 1 means the model transcribes faster than the audio plays — you can serve live speech. RTF 20× on a 30s clip means the model finishes it in 1.5s."
 						/>
@@ -715,7 +715,7 @@
 						<StatCard
 							label="Fits on device"
 							value={p.perGpu.fits ? 'Yes' : 'No'}
-							accent={p.perGpu.fits ? '#34d399' : '#f87171'}
+							accent={p.perGpu.fits ? '#3ff0b8' : '#ff3b52'}
 							sub={p.perGpu.fits
 								? `${fmtBytes(p.perGpu.headroom)} free / GPU`
 								: `${fmtBytes(-p.perGpu.headroom)} over / GPU`}
@@ -725,7 +725,7 @@
 							label="Sustained control"
 							value={p.vla.effectiveHz.toFixed(0)}
 							unit="Hz"
-							accent={p.vla.effectiveHz >= (model.vla?.controlHz ?? 50) ? '#34d399' : '#f87171'}
+							accent={p.vla.effectiveHz >= (model.vla?.controlHz ?? 50) ? '#3ff0b8' : '#ff3b52'}
 							sub="target {model.vla?.controlHz ?? 50} Hz · open-loop chunks"
 							info="Closed-loop control frequency this GPU can sustain per replica: chunk size ÷ chunk latency. Green if it meets the deployed control rate."
 						/>
@@ -761,7 +761,7 @@
 						<StatCard
 							label="Fits on device"
 							value={p.perGpu.fits ? 'Yes' : 'No'}
-							accent={p.perGpu.fits ? '#34d399' : '#f87171'}
+							accent={p.perGpu.fits ? '#3ff0b8' : '#ff3b52'}
 							sub={p.perGpu.fits
 								? `${fmtBytes(p.perGpu.headroom)} free / GPU`
 								: `${fmtBytes(-p.perGpu.headroom)} over / GPU`}
@@ -800,7 +800,7 @@
 						<StatCard
 							label="Max batch / GPU"
 							value={fmtTps(p.maxConcurrentSeqs)}
-							accent={config.batchSize <= p.maxConcurrentSeqs ? '#34d399' : '#f87171'}
+							accent={config.batchSize <= p.maxConcurrentSeqs ? '#3ff0b8' : '#ff3b52'}
 							sub="in leftover memory"
 							info="How many docs one GPU can process at once with the memory left after weights."
 						/>
@@ -810,7 +810,7 @@
 						<StatCard
 							label="Fits on device"
 							value={p.perGpu.fits ? 'Yes' : 'No'}
-							accent={p.perGpu.fits ? '#34d399' : '#f87171'}
+							accent={p.perGpu.fits ? '#3ff0b8' : '#ff3b52'}
 							sub={p.perGpu.fits
 								? `${fmtBytes(p.perGpu.headroom)} free / GPU`
 								: `${fmtBytes(-p.perGpu.headroom)} over / GPU`}
@@ -848,7 +848,7 @@
 						<StatCard
 							label="Max clips / GPU"
 							value={fmtTps(p.maxConcurrentSeqs)}
-							accent={config.batchSize <= p.maxConcurrentSeqs ? '#34d399' : '#f87171'}
+							accent={config.batchSize <= p.maxConcurrentSeqs ? '#3ff0b8' : '#ff3b52'}
 							sub="in leftover memory"
 							info="How many clips one GPU can encode at once with the memory left after weights. If your batch is larger than this, they won't all fit."
 						/>
@@ -858,7 +858,7 @@
 						<StatCard
 							label="Fits on device"
 							value={p.perGpu.fits ? 'Yes' : 'No'}
-							accent={p.perGpu.fits ? '#34d399' : '#f87171'}
+							accent={p.perGpu.fits ? '#3ff0b8' : '#ff3b52'}
 							sub={p.perGpu.fits
 								? `${fmtBytes(p.perGpu.headroom)} free / GPU`
 								: `${fmtBytes(-p.perGpu.headroom)} over / GPU`}
@@ -867,7 +867,7 @@
 						<StatCard
 							label="Max concurrent seqs"
 							value={fmtTps(p.maxConcurrentSeqs)}
-							accent={config.batchSize <= p.maxConcurrentSeqs ? '#34d399' : '#f87171'}
+							accent={config.batchSize <= p.maxConcurrentSeqs ? '#3ff0b8' : '#ff3b52'}
 							sub="{fmtSeq(
 								config.inputTokens + config.outputTokens
 							)} ctx · {config.kvAllocation} KV"
@@ -888,7 +888,7 @@
 							sub={p.specSpeedup && p.specSpeedup > 1
 								? `single user · ${p.specSpeedup.toFixed(1)}× spec-decode`
 								: 'single user decode'}
-							accent={p.specSpeedup && p.specSpeedup > 1 ? '#34d399' : undefined}
+							accent={p.specSpeedup && p.specSpeedup > 1 ? '#3ff0b8' : undefined}
 							info="How fast the answer appears for ONE user, in words per second. This is what a single person feels. Bigger batches raise total throughput but can lower this, because the GPU is sharing its time among more users. Speculative decoding raises it directly (decode only)."
 						/>
 						<StatCard

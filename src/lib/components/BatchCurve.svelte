@@ -72,7 +72,7 @@
 					y1={PAD.t + plotH - f * plotH}
 					x2={W - PAD.r}
 					y2={PAD.t + plotH - f * plotH}
-					stroke="#1e293b"
+					stroke="#12163a"
 					stroke-width="1"
 				/>
 			{/each}
@@ -84,7 +84,7 @@
 					y1={PAD.t}
 					x2={xOf(kneeIdx)}
 					y2={PAD.t + plotH}
-					stroke="#34d399"
+					stroke="#3ff0b8"
 					stroke-width="1.5"
 					stroke-dasharray="3 3"
 					opacity="0.6"
@@ -103,20 +103,20 @@
 				y1={PAD.t}
 				x2={xOf(curIdx < 0 ? 0 : curIdx)}
 				y2={PAD.t + plotH}
-				stroke="#e2e8f0"
+				stroke="#ecebff"
 				stroke-width="1"
 				stroke-dasharray="2 3"
 				opacity="0.5"
 			/>
 
 			<!-- throughput (left axis) -->
-			<polyline points={tpLine} fill="none" stroke="#2dd4bf" stroke-width="2" />
+			<polyline points={tpLine} fill="none" stroke="#ff2bd6" stroke-width="2" />
 			<!-- per-user (right axis) -->
-			<polyline points={puLine} fill="none" stroke="#fbbf24" stroke-width="2" />
+			<polyline points={puLine} fill="none" stroke="#f5ec58" stroke-width="2" />
 
 			{#if cur}
-				<circle cx={xOf(curIdx)} cy={yTp(cur.throughputTps)} r="4" fill="#2dd4bf" />
-				<circle cx={xOf(curIdx)} cy={yPu(cur.perUserTps)} r="4" fill="#fbbf24" />
+				<circle cx={xOf(curIdx)} cy={yTp(cur.throughputTps)} r="4" fill="#ff2bd6" />
+				<circle cx={xOf(curIdx)} cy={yPu(cur.perUserTps)} r="4" fill="#f5ec58" />
 			{/if}
 
 			<!-- axis labels -->
@@ -142,13 +142,13 @@
 			{/each}
 
 			<!-- axes -->
-			<line x1={PAD.l} y1={PAD.t} x2={PAD.l} y2={PAD.t + plotH} stroke="#334155" stroke-width="1" />
+			<line x1={PAD.l} y1={PAD.t} x2={PAD.l} y2={PAD.t + plotH} stroke="#5659a4" stroke-width="1" />
 			<line
 				x1={PAD.l}
 				y1={PAD.t + plotH}
 				x2={W - PAD.r}
 				y2={PAD.t + plotH}
-				stroke="#334155"
+				stroke="#5659a4"
 				stroke-width="1"
 			/>
 			<line
@@ -156,7 +156,7 @@
 				y1={PAD.t}
 				x2={W - PAD.r}
 				y2={PAD.t + plotH}
-				stroke="#334155"
+				stroke="#5659a4"
 				stroke-width="1"
 			/>
 		</svg>
@@ -164,11 +164,11 @@
 		<div class="mt-2 flex flex-wrap items-center justify-between gap-2 text-xs">
 			<div class="flex items-center gap-4">
 				<span class="flex items-center gap-1.5 text-slate-300"
-					><span class="inline-block h-2 w-4 rounded" style="background:#2dd4bf"></span>Aggregate
+					><span class="inline-block h-2 w-4 rounded" style="background:#ff2bd6"></span>Aggregate
 					throughput</span
 				>
 				<span class="flex items-center gap-1.5 text-slate-300"
-					><span class="inline-block h-2 w-4 rounded" style="background:#fbbf24"></span>Per-user
+					><span class="inline-block h-2 w-4 rounded" style="background:#f5ec58"></span>Per-user
 					speed</span
 				>
 			</div>

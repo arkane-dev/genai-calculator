@@ -18,7 +18,7 @@
 	const litCount = (u: Unit) =>
 		u.isStatic ? 0 : Math.round(Math.max(0, Math.min(1, u.util ?? 0)) * cols);
 	// marker colour by severity
-	const flagColor = (b: Unit['bottleneck']) => (b === 'alert' ? '#f87171' : '#fbbf24');
+	const flagColor = (b: Unit['bottleneck']) => (b === 'alert' ? '#ff3b52' : '#f5ec58');
 </script>
 
 <div class="flex h-full flex-col rounded-lg border border-slate-600 bg-slate-900 p-3">
@@ -68,7 +68,7 @@
 						{@const on = u.isStatic || i < lit}
 						<div
 							class="flex-1 rounded-[2px] transition-colors duration-300"
-							style:background-color={u.isStatic ? `${u.color}55` : on ? u.color : '#1e293b'}
+							style:background-color={u.isStatic ? `${u.color}55` : on ? u.color : '#12163a'}
 							style:transition-delay="{i * 10}ms"
 							style:box-shadow={on && !u.isStatic ? `0 0 4px ${u.color}99` : 'none'}
 						></div>

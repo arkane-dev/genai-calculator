@@ -69,7 +69,7 @@
 					{#if c.numNodes > 1}
 						<span
 							class="h-1.5 w-1.5 rounded-full"
-							style:background-color={c.crossesFabric ? COLORS.network : '#475569'}
+							style:background-color={c.crossesFabric ? COLORS.network : '#5659a4'}
 						></span>
 					{/if}
 				</div>

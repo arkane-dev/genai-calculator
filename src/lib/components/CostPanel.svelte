@@ -117,7 +117,7 @@
 	</div>
 
 	{#if useEstimated}
-		<div class="mb-3 rounded-lg border border-amber-600/40 bg-amber-500/5 p-3 text-xs text-amber-200/90">
+		<div class="mb-3 rounded-lg border border-amber-600/40 bg-amber-500/5 p-3 text-xs text-amber-200">
 			<span class="font-semibold text-amber-300">Estimates only.</span>
 			Rates vary 2-3x between providers, and committed contracts or private pricing can change the
 			bill a lot. Get a real quote before you decide.
@@ -192,7 +192,7 @@
 		</div>
 		{#if perUnit}
 			<div class="rounded-lg border border-emerald-700/50 bg-emerald-500/5 p-3">
-				<div class="text-[11px] tracking-wide text-emerald-400/80 uppercase">{perUnit.label}</div>
+				<div class="text-[11px] tracking-wide text-emerald-400 uppercase">{perUnit.label}</div>
 				<div class="mt-1 font-mono text-lg text-emerald-300">{perUnit.value}</div>
 				<div class="mt-0.5 text-xs text-slate-400">{perUnit.sub}</div>
 			</div>
@@ -208,7 +208,7 @@
 	</div>
 
 	{#if useEstimated && est.warning}
-		<p class="mt-3 rounded-lg border border-amber-600/40 bg-amber-500/5 p-2.5 text-xs text-amber-200/90">
+		<p class="mt-3 rounded-lg border border-amber-600/40 bg-amber-500/5 p-2.5 text-xs text-amber-200">
 			{est.warning}
 		</p>
 	{/if}

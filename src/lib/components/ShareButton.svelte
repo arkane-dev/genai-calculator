@@ -41,6 +41,6 @@
 	{:else if failed}
 		<span class="text-red-400">✗</span> Couldn't copy
 	{:else}
-		🔗 Share this setup
+		Share this setup
 	{/if}
 </button>

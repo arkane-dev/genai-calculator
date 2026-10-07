@@ -575,6 +575,7 @@
 							/>
 						</div>
 						<select
+			aria-label="Model"
 							bind:value={spec.modelId}
 							class="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-100"
 						>
@@ -595,6 +596,7 @@
 							/>
 						</div>
 						<select
+			aria-label="Candidate GPU"
 							bind:value={spec.gpuId}
 							onchange={() => (spec.fabricId = defaultFabricFor(spec.gpuId))}
 							class="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-100"
@@ -616,6 +618,7 @@
 							/>
 						</div>
 						<select
+			aria-label="Network fabric"
 							bind:value={spec.fabricId}
 							class="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-100"
 						>
@@ -1063,7 +1066,7 @@
 							label={isVideoDiff ? 'Clips / sec' : 'Images / sec'}
 							value={(chosen.imagesPerSec ?? 0).toFixed((chosen.imagesPerSec ?? 0) < 1 ? 2 : 1)}
 							unit={isVideoDiff ? 'clip/s' : 'img/s'}
-							accent="#34d399"
+							accent="#3ff0b8"
 							sub="target ≥ {spec.targetImagesPerSec} {isVideoDiff ? 'clip' : 'img'}/s"
 							info="How many {isVideoDiff
 								? 'clips'
@@ -1073,7 +1076,7 @@
 							label={isVideoDiff ? 'Sec / clip' : 'Sec / image'}
 							value={(chosen.secPerImage ?? 0).toFixed(2)}
 							unit="s"
-							accent="#34d399"
+							accent="#3ff0b8"
 							sub="target ≤ {spec.maxSecPerImage} s"
 							info="Wall-clock time for one {isVideoDiff
 								? 'clip'
@@ -1082,7 +1085,7 @@
 						<StatCard
 							label="Fits / GPU"
 							value={p.perGpu.fits ? 'Yes' : 'No'}
-							accent={p.perGpu.fits ? '#34d399' : '#f87171'}
+							accent={p.perGpu.fits ? '#3ff0b8' : '#ff3b52'}
 							sub="{p.bottleneck}-bound"
 							info="Whether the denoiser, its text encoders, and working space all fit inside one GPU's memory for this layout. 'bottleneck' names what limits speed: memory bandwidth, compute, or the network."
 						/>
@@ -1112,7 +1115,7 @@
 						<StatCard
 							label="Streams served"
 							value={(chosen.streamsServed ?? 0).toFixed(0)}
-							accent="#34d399"
+							accent="#3ff0b8"
 							sub="target ≥ {spec.targetStreams}"
 							info="Concurrent real-time streams the cluster can sustain."
 						/>
@@ -1120,14 +1123,14 @@
 							label="RTF / replica"
 							value={(chosen.rtf ?? 0).toFixed(1)}
 							unit="×"
-							accent="#34d399"
+							accent="#3ff0b8"
 							sub="target ≥ {spec.minRtf}×"
 							info="Real-time factor a single replica achieves for the sized batch."
 						/>
 						<StatCard
 							label="Fits / GPU"
 							value={p.perGpu.fits ? 'Yes' : 'No'}
-							accent={p.perGpu.fits ? '#34d399' : '#f87171'}
+							accent={p.perGpu.fits ? '#3ff0b8' : '#ff3b52'}
 							sub="{p.bottleneck}-bound"
 							info="Whether encoder + decoder + KV fit per-GPU."
 						/>
@@ -1157,7 +1160,7 @@
 						<StatCard
 							label="Robots driven"
 							value={(chosen.robotsDriven ?? 0).toFixed(0)}
-							accent="#34d399"
+							accent="#3ff0b8"
 							sub="target ≥ {spec.targetRobots}"
 							info="Robots the cluster can serve at {modelOf?.vla?.controlHz ??
 								50} Hz. Green if it meets your target."
@@ -1166,14 +1169,14 @@
 							label="Sec / chunk"
 							value={((chosen.secPerControl ?? 0) * 1000).toFixed(0)}
 							unit="ms"
-							accent="#34d399"
+							accent="#3ff0b8"
 							sub="target ≤ {(spec.maxSecPerControl * 1000).toFixed(0)} ms"
 							info="Per-chunk inference latency (one observation → chunkSize actions). Green if under your SLO."
 						/>
 						<StatCard
 							label="Fits / GPU"
 							value={p.perGpu.fits ? 'Yes' : 'No'}
-							accent={p.perGpu.fits ? '#34d399' : '#f87171'}
+							accent={p.perGpu.fits ? '#3ff0b8' : '#ff3b52'}
 							sub="{p.bottleneck}-bound"
 							info="Whether the backbone + vision encoder + action expert fits per-GPU."
 						/>
@@ -1204,7 +1207,7 @@
 							label={modelOf?.encoder?.task === 'reranker' ? 'Scores / sec' : 'Docs / sec'}
 							value={(chosen.docsPerSec ?? 0).toFixed((chosen.docsPerSec ?? 0) < 10 ? 1 : 0)}
 							unit={modelOf?.encoder?.task === 'reranker' ? 'score/s' : 'doc/s'}
-							accent="#34d399"
+							accent="#3ff0b8"
 							sub="target ≥ {spec.targetDocsPerSec} /s"
 							info="How many documents (or pairs) the cluster encodes per second. Must meet your target — green means it does."
 						/>
@@ -1212,14 +1215,14 @@
 							label="Sec / batch"
 							value={((chosen.secPerDoc ?? 0) * 1000).toFixed(1)}
 							unit="ms"
-							accent="#34d399"
+							accent="#3ff0b8"
 							sub="target ≤ {(spec.maxSecPerDoc * 1000).toFixed(0)} ms"
 							info="Wall-clock time for one batch pass. Must stay under your Max sec/doc promise — green means it does."
 						/>
 						<StatCard
 							label="Fits / GPU"
 							value={p.perGpu.fits ? 'Yes' : 'No'}
-							accent={p.perGpu.fits ? '#34d399' : '#f87171'}
+							accent={p.perGpu.fits ? '#3ff0b8' : '#ff3b52'}
 							sub="{p.bottleneck}-bound"
 							info="Whether the encoder plus working space fits in each GPU's memory. Encoders are small, so this is usually a big yes."
 						/>
@@ -1250,7 +1253,7 @@
 							label="Clips / sec"
 							value={(chosen.clipsPerSec ?? 0).toFixed((chosen.clipsPerSec ?? 0) < 1 ? 2 : 1)}
 							unit="clip/s"
-							accent="#34d399"
+							accent="#3ff0b8"
 							sub="target ≥ {spec.targetClipsPerSec} clip/s"
 							info="How many clips the whole cluster encodes per second. It must meet your target — green means it does. Raised by bigger batches and more replicas."
 						/>
@@ -1258,14 +1261,14 @@
 							label="Sec / clip"
 							value={(chosen.secPerClip ?? 0).toFixed(3)}
 							unit="s"
-							accent="#34d399"
+							accent="#3ff0b8"
 							sub="target ≤ {spec.maxSecPerClip} s"
 							info="Wall-clock time for one clip (or one batch pass). It must stay under your Max sec/clip promise — green means it does."
 						/>
 						<StatCard
 							label="Fits / GPU"
 							value={p.perGpu.fits ? 'Yes' : 'No'}
-							accent={p.perGpu.fits ? '#34d399' : '#f87171'}
+							accent={p.perGpu.fits ? '#3ff0b8' : '#ff3b52'}
 							sub="{p.bottleneck}-bound"
 							info="Whether the encoder, its predictor, and working space all fit inside one GPU's memory for this layout. 'bottleneck' names what limits speed: memory bandwidth, compute, or the network."
 						/>
@@ -1302,7 +1305,7 @@
 						<StatCard
 							label="Per-user TTFT"
 							value={fmtMs(chosen.ttftMs)}
-							accent="#34d399"
+							accent="#3ff0b8"
 							sub="target ≤ {spec.ttftTargetMs} ms"
 							info="How long one user waits for the first word on this cluster. It must stay under your Max TTFT promise — green means it does. Measured on a single request on its own."
 						/>
@@ -1310,7 +1313,7 @@
 							label="Per-user throughput"
 							value={fmtTps(chosen.perUserTps)}
 							unit="tok/s"
-							accent="#34d399"
+							accent="#3ff0b8"
 							sub="target ≥ {spec.throughputTargetTps} tok/s"
 							info="How fast the answer streams to one user, in tokens per second. It must stay above your Min throughput promise — green means it does."
 						/>
@@ -1323,7 +1326,7 @@
 						<StatCard
 							label="Fits / GPU"
 							value={p.perGpu.fits ? 'Yes' : 'No'}
-							accent={p.perGpu.fits ? '#34d399' : '#f87171'}
+							accent={p.perGpu.fits ? '#3ff0b8' : '#ff3b52'}
 							sub="{p.bottleneck}-bound decode"
 							info="Whether the model, its short-term memory, and working space all fit inside one GPU's memory for this layout. 'bottleneck' names what limits speed: memory bandwidth, compute, or the network."
 						/>
@@ -1611,7 +1614,7 @@
 											<td class="py-1.5 text-emerald-400">meets SLOs</td>
 										{:else}
 											<td class="py-1.5 pr-4 text-slate-600" colspan="5">—</td>
-											<td class="py-1.5 text-red-400/80">{r.reason}</td>
+											<td class="py-1.5 text-red-400">{r.reason}</td>
 										{/if}
 									</tr>
 								{/each}

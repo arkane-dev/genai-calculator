@@ -124,7 +124,7 @@
 		</label>
 	</div>
 
-	<div class="mb-3 rounded-lg border border-amber-600/40 bg-amber-500/5 p-3 text-xs text-amber-200/90">
+	<div class="mb-3 rounded-lg border border-amber-600/40 bg-amber-500/5 p-3 text-xs text-amber-200">
 		<span class="font-semibold text-amber-300">Estimates only.</span>
 		First-order approximations, not audited figures. Grid intensities are directional, and TDP-based
 		power under-counts real host draw. For anything you report externally, use measured figures from
@@ -222,7 +222,7 @@
 			</div>
 			{#if perUnit}
 				<div class="rounded-lg border border-emerald-700/50 bg-emerald-500/5 p-3">
-					<div class="text-[11px] tracking-wide text-emerald-400/80 uppercase">{perUnit.label}</div>
+					<div class="text-[11px] tracking-wide text-emerald-400 uppercase">{perUnit.label}</div>
 					<div class="mt-1 font-mono text-lg text-emerald-300">{perUnit.value}</div>
 					<div class="mt-0.5 text-xs text-slate-400">{perUnit.sub}</div>
 				</div>

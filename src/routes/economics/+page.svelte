@@ -235,12 +235,12 @@
 		if (be.cheaper === 'self-host')
 			return {
 				title: 'Self-hosting wins',
-				accent: '#38bdf8',
+				accent: '#22f2f7',
 				save: be.apiMonthly - be.selfHostMonthly
 			};
 		if (be.cheaper === 'api')
-			return { title: 'The API wins', accent: '#34d399', save: be.selfHostMonthly - be.apiMonthly };
-		return { title: 'Line-ball', accent: '#e2e8f0', save: 0 };
+			return { title: 'The API wins', accent: '#3ff0b8', save: be.selfHostMonthly - be.apiMonthly };
+		return { title: 'Line-ball', accent: '#ecebff', save: 0 };
 	});
 </script>
 
@@ -299,7 +299,7 @@
 				servers.
 			</p>
 			<div
-				class="mt-3 rounded-lg border border-amber-600/40 bg-amber-500/[0.06] p-3 text-xs text-amber-200/90"
+				class="mt-3 rounded-lg border border-amber-600/40 bg-amber-500/[0.06] p-3 text-xs text-amber-200"
 			>
 				<strong>These are first-order estimates.</strong> Self-host cost here is GPU rental only. It leaves
 				out engineering/on-call, storage, data transfer, failover headroom, and cold-start. A managed
@@ -550,14 +550,14 @@
 							label="Self-host"
 							value={fmtUsd(be.selfHostMonthly)}
 							sub="/mo · {fmtUsd(clusterPerHour ?? 0)}/hr · {config.numGpus}× {gpu.name}"
-							accent="#38bdf8"
+							accent="#22f2f7"
 							info="Cost to rent the cluster for a month, billed around the clock. Fixed — independent of usage."
 						/>
 						<StatCard
 							label="API"
 							value={fmtUsd(be.apiMonthly)}
 							sub="/mo at this volume"
-							accent="#34d399"
+							accent="#3ff0b8"
 							info="Per-token API cost for the same traffic this month: requests × (input × $in + output × $out)."
 						/>
 					</div>
@@ -571,7 +571,7 @@
 								: be.regime === 'api-always'
 									? 'never'
 									: 'always'}
-							accent="#f59e0b"
+							accent="#f6bd6a"
 							sub={be.regime === 'crossover'
 								? `≈ ${fmtTok(be.breakevenOutTokensPerMonth ?? 0)} out tok/mo`
 								: be.regime === 'api-always'
@@ -586,22 +586,22 @@
 								: '—'}
 							sub={be.regime === 'crossover' ? `you're at ${dutyPct}%` : be.regime}
 							accent={be.breakevenDutyCycle != null && dutyPct / 100 >= be.breakevenDutyCycle
-								? '#38bdf8'
-								: '#34d399'}
+								? '#22f2f7'
+								: '#3ff0b8'}
 							info="How busy the cluster must be for self-hosting to pay off. Above this, self-host wins; below, the API."
 						/>
 						<StatCard
 							label="Self-host $/1M"
 							value={be.selfHostPerMTokens != null ? `$${be.selfHostPerMTokens.toFixed(2)}` : '—'}
 							sub="blended, at {dutyPct}%"
-							accent="#38bdf8"
+							accent="#22f2f7"
 							info="Effective self-host $/1M tokens at your utilisation. Falls as the cluster gets busier."
 						/>
 						<StatCard
 							label="API $/1M"
 							value="${be.apiPerMTokens.toFixed(2)}"
 							sub="blended in+out"
-							accent="#34d399"
+							accent="#3ff0b8"
 							info="The API's effective $/1M for your input/output mix. Constant at any volume."
 						/>
 					</div>
@@ -617,7 +617,7 @@
 							</div>
 							<div
 								class="mt-1 text-lg font-semibold"
-								style:color={p.perUserTps >= apiPerUserTps ? '#38bdf8' : '#34d399'}
+								style:color={p.perUserTps >= apiPerUserTps ? '#22f2f7' : '#3ff0b8'}
 							>
 								{p.perUserTps >= apiPerUserTps
 									? 'Self-host streams faster'
@@ -634,7 +634,7 @@
 							label="Self-host / user"
 							value={p.perUserTps.toFixed(0)}
 							unit="tok/s"
-							accent="#38bdf8"
+							accent="#22f2f7"
 							sub="at batch {config.batchSize}"
 							info="Decode speed one user feels on the cluster at the configured batch."
 						/>
@@ -642,7 +642,7 @@
 							label="API / user"
 							value={String(apiPerUserTps)}
 							unit="tok/s"
-							accent={apiPerUserTps < slaTps ? '#f87171' : '#34d399'}
+							accent={apiPerUserTps < slaTps ? '#ff3b52' : '#3ff0b8'}
 							sub={apiPerUserTps < slaTps ? `below your ${slaTps} tok/s SLO` : 'your entered limit'}
 							info="The API per-user streaming rate, from your input — not infinite."
 						/>
@@ -701,7 +701,7 @@
 								>
 							</div>
 						</div>
-						{#if cost.warning}<p class="mt-3 text-[11px] text-amber-300/80">{cost.warning}</p>{/if}
+						{#if cost.warning}<p class="mt-3 text-[11px] text-amber-300">{cost.warning}</p>{/if}
 						<p class="mt-3 text-[10px] text-slate-500">
 							Self-host is billed 24/7 for the cluster you configured. API volume is derived from
 							the cluster's peak throughput scaled by the duty cycle, so both sides serve the same

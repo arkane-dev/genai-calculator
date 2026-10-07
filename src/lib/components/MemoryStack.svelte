@@ -46,8 +46,8 @@
 					style:border-top={seg.key === 'free' ? 'none' : '1px solid rgba(15,23,42,0.5)'}
 				>
 					{#if pct(seg.bytes) > 7 && seg.key !== 'free'}
-						<span class="truncate text-xs font-medium text-slate-900/90">{seg.label}</span>
-						<span class="font-mono text-xs text-slate-900/80">{fmtBytes(seg.bytes)}</span>
+						<span class="truncate text-xs font-medium text-slate-900">{seg.label}</span>
+						<span class="font-mono text-xs text-slate-900">{fmtBytes(seg.bytes)}</span>
 					{/if}
 				</div>
 			{/each}

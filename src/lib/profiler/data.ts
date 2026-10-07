@@ -1,27 +1,27 @@
 import type { DieUnit, FabricSpec, GpuSpec, ModelSpec, WeightFormat } from './types';
 
-// Segment colors. Chosen to stay legible on the dark slate canvas and to be
-// distinguishable for the common forms of color-vision deficiency.
+// Segment colors, from the NEONDECK chart palette. Legible on the dark canvas and
+// distinct from each other for the common forms of color-vision deficiency.
 export const COLORS = {
-	weights: '#6366f1', // indigo
-	kv: '#14b8a6', // teal
-	mamba: '#8b5cf6', // violet, SSM recurrent state (hybrid Mamba models)
-	activations: '#f59e0b', // amber
-	gradients: '#f43f5e', // rose, training gradients
-	optimizer: '#0ea5e9', // sky, optimizer states (Adam m/v + fp32 master)
-	overhead: '#64748b', // slate
-	free: '#1e293b', // empty capacity
-	overflow: '#ef4444', // red, does-not-fit
-	memPipe: '#2dd4bf', // teal, HBM->compute bandwidth
-	tensor: '#f97316', // orange, tensor cores
-	cuda: '#22d3ee', // cyan, vector/CUDA cores
-	rt: '#a3e635', // lime, ray-tracing cores
-	hbm: '#2dd4bf', // teal, memory controllers / HBM I/O (ties to the HBM pipe)
-	l2: '#5eead4', // light teal, L2 cache
-	link: '#a855f7', // violet, on-die NVLink/PCIe I/O (ties to NVLink pipes)
-	sched: '#64748b', // slate, scheduler / uncore (structural)
-	nvlink: '#a855f7', // violet, intra-node interconnect
-	network: '#fbbf24' // amber, inter-node fabric (InfiniBand / RDMA Ethernet)
+	weights: '#ff2bd6', // magenta
+	kv: '#22f2f7', // cyan
+	mamba: '#a66bff', // violet, SSM recurrent state (hybrid Mamba models)
+	activations: '#f5ec58', // yellow
+	gradients: '#ef6352', // coral, training gradients
+	optimizer: '#3ff0b8', // jade, optimizer states (Adam m/v + fp32 master)
+	overhead: '#8885b9', // muted, framework overhead
+	free: '#12163a', // empty capacity (surface-2)
+	overflow: '#ff3b52', // red, does-not-fit
+	memPipe: '#22f2f7', // cyan, HBM->compute bandwidth (ties to KV)
+	tensor: '#f6bd6a', // gold, tensor cores
+	cuda: '#6077ff', // blue, vector/CUDA cores
+	rt: '#ef6352', // coral, ray-tracing cores
+	hbm: '#22f2f7', // cyan, memory controllers / HBM I/O (ties to the HBM pipe)
+	l2: '#3ff0b8', // jade, L2 cache
+	link: '#a66bff', // violet, on-die NVLink/PCIe I/O (ties to NVLink pipes)
+	sched: '#8885b9', // muted, scheduler / uncore (structural)
+	nvlink: '#a66bff', // violet, intra-node interconnect
+	network: '#f5ec58' // yellow, inter-node fabric (InfiniBand / RDMA Ethernet)
 } as const;
 
 // Approximate die-area breakdowns. Real floorplans aren't published cleanly, so

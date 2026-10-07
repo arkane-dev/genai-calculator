@@ -180,6 +180,7 @@
 			/>
 		</div>
 		<select
+			aria-label="Model"
 			bind:value={config.modelId}
 			class="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-100"
 		>
@@ -201,6 +202,7 @@
 			/>
 		</div>
 		<select
+			aria-label="GPU"
 			bind:value={config.gpuId}
 			onchange={() => (config.fabricId = defaultFabricFor(config.gpuId))}
 			class="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-100"
@@ -238,6 +240,7 @@
 			/>
 		</div>
 		<select
+			aria-label="Network fabric (per GPU)"
 			bind:value={config.fabricId}
 			class="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-100"
 		>
@@ -514,6 +517,7 @@
 			/>
 		</div>
 		<select
+			aria-label="Weight format"
 			bind:value={config.weightFormatId}
 			class="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-100"
 		>

@@ -8,7 +8,7 @@
 		accent?: string; // css color for the value
 		info?: string; // plain-language explanation of what the number means + why it matters
 	}
-	let { label, value, unit = '', sub = '', accent = '#e2e8f0', info }: Props = $props();
+	let { label, value, unit = '', sub = '', accent = '#ecebff', info }: Props = $props();
 </script>
 
 <div class="rounded-xl border border-slate-700 bg-slate-800/50 p-4">

@@ -215,7 +215,7 @@
 							>
 								<div class="min-w-0">
 									<div class="text-xs text-slate-400">{step.label}</div>
-									<div class="mt-1 overflow-x-auto text-slate-100">
+									<div class="mt-1 overflow-x-auto text-slate-100" tabindex="0" role="region" aria-label="{step.label}">
 										<Latex display math={`${step.formula} \\;=\\; ${step.substituted}`} />
 									</div>
 									{#if step.note}<div class="mt-1 text-[11px] text-slate-500">{step.note}</div>{/if}

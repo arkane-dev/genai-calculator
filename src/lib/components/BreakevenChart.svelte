@@ -27,7 +27,7 @@
 	}: Props = $props();
 
 	// API turns red when it can't actually deliver the SLO — cost is moot if it can't serve it.
-	const apiColor = $derived(apiViolatesSlo ? '#f87171' : '#34d399');
+	const apiColor = $derived(apiViolatesSlo ? '#ff3b52' : '#3ff0b8');
 
 	const W = 640;
 	const H = 300;
@@ -94,7 +94,7 @@
 	>
 		<!-- gridlines -->
 		{#each yTicks as ty (ty)}
-			<line x1={PAD.l} y1={yOf(ty)} x2={W - PAD.r} y2={yOf(ty)} stroke="#1e293b" stroke-width="1" />
+			<line x1={PAD.l} y1={yOf(ty)} x2={W - PAD.r} y2={yOf(ty)} stroke="#12163a" stroke-width="1" />
 			<text x={PAD.l - 8} y={yOf(ty) + 3} text-anchor="end" class="fill-slate-500 text-[10px]"
 				>{fmtUsd(ty)}</text
 			>
@@ -112,7 +112,7 @@
 				y1={PAD.t}
 				x2={beX}
 				y2={PAD.t + plotH}
-				stroke="#f59e0b"
+				stroke="#f6bd6a"
 				stroke-width="1.5"
 				stroke-dasharray="4 3"
 			/>
@@ -122,7 +122,7 @@
 		{/if}
 
 		<!-- self-host: staircase (each step = +1 cluster) -->
-		<polyline points={stairPts} fill="none" stroke="#38bdf8" stroke-width="2" />
+		<polyline points={stairPts} fill="none" stroke="#22f2f7" stroke-width="2" />
 		<!-- API: linear from origin (red + dashed when it can't meet the SLO) -->
 		<polyline
 			points={apiLine}
@@ -138,17 +138,17 @@
 			y1={PAD.t}
 			x2={curX}
 			y2={PAD.t + plotH}
-			stroke="#e2e8f0"
+			stroke="#ecebff"
 			stroke-width="1"
 			stroke-dasharray="2 3"
 			opacity="0.5"
 		/>
-		<circle cx={curX} cy={curSelfY} r="4" fill="#38bdf8" />
+		<circle cx={curX} cy={curSelfY} r="4" fill="#22f2f7" />
 		<circle cx={curX} cy={curApiY} r="4" fill={apiColor} />
 
 		<!-- can't-serve overlay: cost is irrelevant if the API can't hit the SLO -->
 		{#if apiViolatesSlo}
-			<rect x={PAD.l} y={PAD.t} width={plotW} height="24" fill="#7f1d1d" opacity="0.4" />
+			<rect x={PAD.l} y={PAD.t} width={plotW} height="24" fill="#4a1020" opacity="0.4" />
 			<text
 				x={PAD.l + plotW / 2}
 				y={PAD.t + 16}
@@ -160,13 +160,13 @@
 		{/if}
 
 		<!-- axes -->
-		<line x1={PAD.l} y1={PAD.t} x2={PAD.l} y2={PAD.t + plotH} stroke="#334155" stroke-width="1" />
+		<line x1={PAD.l} y1={PAD.t} x2={PAD.l} y2={PAD.t + plotH} stroke="#5659a4" stroke-width="1" />
 		<line
 			x1={PAD.l}
 			y1={PAD.t + plotH}
 			x2={W - PAD.r}
 			y2={PAD.t + plotH}
-			stroke="#334155"
+			stroke="#5659a4"
 			stroke-width="1"
 		/>
 	</svg>
@@ -174,7 +174,7 @@
 	<div class="mt-2 flex flex-wrap items-center justify-between gap-2 text-xs">
 		<div class="flex items-center gap-4">
 			<span class="flex items-center gap-1.5 text-slate-300"
-				><span class="inline-block h-2 w-4 rounded" style="background:#38bdf8"></span>Self-host
+				><span class="inline-block h-2 w-4 rounded" style="background:#22f2f7"></span>Self-host
 				(steps = +1 cluster)</span
 			>
 			<span class="flex items-center gap-1.5 {apiViolatesSlo ? 'text-red-400' : 'text-slate-300'}"

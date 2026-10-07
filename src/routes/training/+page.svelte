@@ -316,6 +316,7 @@
 							/>
 						</div>
 						<select
+			aria-label="Model"
 							bind:value={cfg.modelId}
 							class="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-100"
 						>
@@ -359,6 +360,7 @@
 							/>
 						</div>
 						<select
+			aria-label="GPU"
 							bind:value={cfg.gpuId}
 							onchange={() => (cfg.fabricId = defaultFabricFor(cfg.gpuId))}
 							class="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-100"
@@ -393,6 +395,7 @@
 							/>
 						</div>
 						<select
+			aria-label="Network fabric"
 							bind:value={cfg.fabricId}
 							class="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-100"
 						>
@@ -546,7 +549,7 @@
 					<StatCard
 						label="Fits to train"
 						value={p.perGpu.fits ? 'Yes' : 'No'}
-						accent={p.perGpu.fits ? '#34d399' : '#f87171'}
+						accent={p.perGpu.fits ? '#3ff0b8' : '#ff3b52'}
 						sub={p.perGpu.fits
 							? `${fmtBytes(p.perGpu.headroom)} free / GPU`
 							: `${fmtBytes(-p.perGpu.headroom)} over / GPU`}
@@ -586,7 +589,7 @@
 						label="MFU"
 						value={(p.mfu * 100).toFixed(0)}
 						unit="%"
-						accent={p.mfu > 0.35 ? '#34d399' : '#fbbf24'}
+						accent={p.mfu > 0.35 ? '#3ff0b8' : '#f5ec58'}
 						sub="{p.computeAchievedTflops.toFixed(0)} TFLOP/s / GPU"
 						info="Model-flop utilization: how much of the GPU's math peak the training actually uses. Real large-scale training lands around 35–50%; lower usually means it's waiting on the network."
 					/>
