@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { base } from '$app/paths';
 	// Self-host vs API, built on the SAME Modelling setup: you configure the exact cluster
 	// with the full Modelling control panel, the forward model (computeProfile) gives its
 	// throughput, we cost that cluster and compare to a per-token API. Because it uses the
@@ -281,7 +282,7 @@
 					Configure the <strong>cluster</strong> with the full Modelling controls — model, GPU, GPU
 					count, parallelism, quantization, and the request shape (input/output tokens). The forward
 					model computes the cluster's throughput (the same engine as the
-					<a href="/modelling">Modelling</a> tab).
+					<a href="{base}/modelling">Modelling</a> tab).
 				</li>
 				<li>
 					Set the <strong>duty cycle</strong>: what fraction of the month that cluster is actually
@@ -511,7 +512,7 @@
 							>{model?.name ?? config.modelId} doesn't fit on {config.numGpus}× {gpu.name}</span
 						>
 						— it overflows GPU memory at this config. Add GPUs, raise TP/PP, or use a smaller weight format
-						(see the <a href="/modelling" class="underline">Modelling</a> tab), then the cost can be compared.
+						(see the <a href="{base}/modelling" class="underline">Modelling</a> tab), then the cost can be compared.
 					</div>
 				{:else if clusterPerHour == null}
 					<div
